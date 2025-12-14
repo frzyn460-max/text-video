@@ -1,0 +1,879 @@
+/* =====================================================
+   Cinematic Text Player Pro - نسخه 4.0
+   استایل کامل با کامنت‌گذاری فارسی
+   ===================================================== */
+
+/* =====================================================
+   1. متغیرها و تنظیمات پایه
+   ===================================================== */
+:root {
+  --bg-1: #0a0e1a;
+  --bg-2: #0f1419;
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --primary: #ff6b6b;
+  --accent: #ffd93d;
+  --purple: #a855f7;
+  --cyan: #06b6d4;
+  --glass-bg: rgba(15, 23, 42, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+.dark {
+  --bg-1: #0a0e1a;
+  --bg-2: #0f1419;
+  --text: #f1f5f9;
+  --glass-bg: rgba(15, 23, 42, 0.7);
+}
+
+html:not(.dark) {
+  --bg-1: #f8fafc;
+  --bg-2: #f1f5f9;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.1);
+}
+
+/* =====================================================
+   2. تنظیمات عمومی
+   ===================================================== */
+* {
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+body {
+  background: linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 100%);
+  color: var(--text);
+  font-feature-settings: "ss01", "cv05";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* =====================================================
+   3. اسکرول بار
+   ===================================================== */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #ff6b6b, #ffd93d);
+  border-radius: 10px;
+  transition: all 0.3s;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #ff5252, #ffaa00);
+}
+
+/* =====================================================
+   4. Glass Cards
+   ===================================================== */
+.glass-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* =====================================================
+   5. دکمه تم
+   ===================================================== */
+#themeToggle {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+}
+
+html:not(.dark) .sun-icon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+html:not(.dark) .moon-icon {
+  opacity: 0;
+  transform: rotate(180deg) scale(0);
+}
+
+.dark .sun-icon {
+  opacity: 0;
+  transform: rotate(-180deg) scale(0);
+}
+
+.dark .moon-icon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+/* =====================================================
+   6. انیمیشن‌ها
+   ===================================================== */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 4s ease infinite;
+}
+
+/* =====================================================
+   7. Badge
+   ===================================================== */
+.badge {
+  padding: 4px 12px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 107, 107, 0.2),
+    rgba(255, 217, 61, 0.2)
+  );
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ff6b6b;
+}
+
+/* =====================================================
+   8. دکمه‌ها
+   ===================================================== */
+.btn {
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s;
+  border: 1px solid var(--glass-border);
+  cursor: pointer;
+}
+
+.btn:active {
+  transform: scale(0.95);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #ff6b6b, #ff5252);
+  border: none;
+  color: white;
+  box-shadow: 0 4px 16px rgba(255, 107, 107, 0.3);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 8px 24px rgba(255, 107, 107, 0.5);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, #06b6d4, #3b82f6);
+  border: none;
+  color: white;
+}
+
+.btn-accent {
+  background: linear-gradient(135deg, #ffd93d, #ffaa00);
+  border: none;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.btn-ghost {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  color: var(--text);
+}
+
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-icon {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 12px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.btn-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.btn-icon-sm {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 20px;
+  color: var(--text);
+  transition: all 0.3s;
+}
+
+.btn-icon-sm:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* =====================================================
+   9. تب‌ها
+   ===================================================== */
+.tab-btn {
+  flex: 1;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.tab-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+}
+
+.tab-btn.active {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 107, 107, 0.2),
+    rgba(168, 85, 247, 0.2)
+  );
+  color: var(--text);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.2);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+  animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =====================================================
+   10. Template Button
+   ===================================================== */
+.template-btn {
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  font-size: 12px;
+  transition: all 0.3s;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.template-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 107, 107, 0.5);
+  transform: translateY(-2px);
+}
+
+/* =====================================================
+   11. اسلایدر
+   ===================================================== */
+.slider {
+  height: 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff6b6b, #ffd93d);
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.5);
+  transition: all 0.2s;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 6px 16px rgba(255, 107, 107, 0.7);
+}
+
+.slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff6b6b, #ffd93d);
+  cursor: pointer;
+}
+
+/* =====================================================
+   12. Select
+   ===================================================== */
+.select-custom {
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 12px center;
+  padding-left: 36px;
+}
+
+.select-custom:focus {
+  outline: none;
+  border-color: #ff6b6b;
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+}
+
+/* =====================================================
+   13. Toggle Switch
+   ===================================================== */
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+  color: var(--text-muted);
+  transition: color 0.3s;
+}
+
+.toggle-label:hover {
+  color: var(--text);
+}
+
+.toggle-switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+
+.toggle-switch::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 18px;
+  height: 18px;
+  background: #94a3b8;
+  border-radius: 50%;
+  transition: all 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-label input:checked + .toggle-switch {
+  background: linear-gradient(135deg, #ff6b6b, #ffd93d);
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.toggle-label input:checked + .toggle-switch::after {
+  transform: translateX(-20px);
+  background: white;
+}
+
+/* =====================================================
+   14. File Input
+   ===================================================== */
+.file-input {
+  font-size: 13px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.file-input:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.file-input::file-selector-button {
+  padding: 6px 16px;
+  margin-left: 12px;
+  background: linear-gradient(135deg, #ff6b6b, #ff5252);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* =====================================================
+   15. Viewport
+   ===================================================== */
+.viewport-container {
+  transition: all 0.5s;
+}
+
+.viewport {
+  aspect-ratio: 16 / 9;
+  min-height: 400px;
+  max-height: 720px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.5s;
+}
+
+.viewport.fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  border-radius: 0 !important;
+  aspect-ratio: auto !important;
+  min-height: 100vh !important;
+  max-height: 100vh !important;
+}
+
+/* =====================================================
+   16. افکت‌ها
+   ===================================================== */
+.particles-canvas.active {
+  opacity: 0.5 !important;
+}
+
+.film-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='3' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+  animation: grain 0.4s steps(6) infinite;
+}
+
+.film-grain.active {
+  opacity: 0.2 !important;
+}
+
+@keyframes grain {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-5%, -5%);
+  }
+  50% {
+    transform: translate(-10%, 5%);
+  }
+  75% {
+    transform: translate(5%, -10%);
+  }
+}
+
+.vignette {
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent 30%,
+    rgba(0, 0, 0, 0.3) 60%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+}
+
+.vignette.active {
+  opacity: 1 !important;
+}
+
+/* =====================================================
+   17. Scene
+   ===================================================== */
+.scene-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 1s ease-out;
+}
+
+.scene-text {
+  text-align: center;
+  max-width: 90%;
+  padding: 16px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9), 0 4px 20px rgba(0, 0, 0, 0.8),
+    0 8px 40px rgba(0, 0, 0, 0.7);
+}
+
+.scene-title {
+  font-size: clamp(14px, 2vw, 20px);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: #ffd93d;
+  opacity: 0.9;
+  margin-bottom: 16px;
+}
+
+.scene-main {
+  font-weight: 900;
+  line-height: 1.1;
+  color: white;
+}
+
+.scene-main.glow {
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.8),
+    0 0 40px rgba(255, 107, 107, 0.6), 0 0 60px rgba(255, 107, 107, 0.4);
+}
+
+/* =====================================================
+   18. انتقال‌ها
+   ===================================================== */
+.transition-fade.enter {
+  animation: fadeIn 0.8s ease forwards;
+}
+.transition-fade.exit {
+  animation: fadeOut 0.6s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateY(-30px) scale(1.05);
+  }
+}
+
+.transition-slide.enter {
+  animation: slideIn 0.8s ease forwards;
+}
+.transition-slide.exit {
+  animation: slideOut 0.6s ease forwards;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOut {
+  to {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+}
+
+.transition-zoom.enter {
+  animation: zoomIn 0.8s ease forwards;
+}
+.transition-zoom.exit {
+  animation: zoomOut 0.6s ease forwards;
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes zoomOut {
+  to {
+    opacity: 0;
+    transform: scale(2);
+  }
+}
+
+.transition-blur.enter {
+  animation: blurIn 0.8s ease forwards;
+}
+.transition-blur.exit {
+  animation: blurOut 0.6s ease forwards;
+}
+
+@keyframes blurIn {
+  from {
+    opacity: 0;
+    filter: blur(30px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@keyframes blurOut {
+  to {
+    opacity: 0;
+    filter: blur(30px);
+  }
+}
+
+.transition-rotate.enter {
+  animation: rotateIn 0.8s ease forwards;
+}
+.transition-rotate.exit {
+  animation: rotateOut 0.6s ease forwards;
+}
+
+@keyframes rotateIn {
+  from {
+    opacity: 0;
+    transform: rotate(-180deg) scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+}
+
+@keyframes rotateOut {
+  to {
+    opacity: 0;
+    transform: rotate(180deg) scale(0.5);
+  }
+}
+
+.kb-zoom {
+  transition: transform 15s ease-out;
+}
+
+/* =====================================================
+   19. کنترل‌ها
+   ===================================================== */
+.control-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.control-btn-large {
+  width: 64px;
+  height: 64px;
+}
+
+/* =====================================================
+   20. Kbd
+   ===================================================== */
+.kbd {
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: 6px;
+  font-size: 11px;
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* =====================================================
+   21. Modal
+   ===================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 24px;
+  max-width: 500px;
+  width: 100%;
+  backdrop-filter: blur(20px);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =====================================================
+   22. Responsive
+   ===================================================== */
+@media (max-width: 640px) {
+  .viewport {
+    min-height: 300px;
+    aspect-ratio: 4 / 3;
+  }
+
+  .scene-text {
+    max-width: 95%;
+  }
+  .scene-main {
+    font-size: clamp(20px, 6vw, 36px) !important;
+  }
+  .letterbox-top,
+  .letterbox-bottom {
+    height: 6% !important;
+  }
+  .control-btn {
+    width: 40px;
+    height: 40px;
+  }
+  .control-btn-large {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+@media (min-width: 1920px) {
+  .viewport {
+    max-height: 900px;
+  }
+}
+
+/* =====================================================
+   23. Utilities
+   ===================================================== */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+::selection {
+  background-color: rgba(255, 107, 107, 0.3);
+  color: #fff;
+}
+
+*:focus-visible {
+  outline: 2px solid #ff6b6b;
+  outline-offset: 2px;
+}
+
+@media print {
+  .glass-card,
+  .btn,
+  footer,
+  #themeToggle,
+  #aiAssistant {
+    display: none !important;
+  }
+}
