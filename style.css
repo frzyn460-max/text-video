@@ -1,380 +1,329 @@
-/* =====================================================
-   Cinematic Text Player Pro - استایل کامل
-   ===================================================== */
-
-/* ===== متغیرها ===== */
-:root {
-  --primary-500: #ef4444;
-  --accent-400: #fbbf24;
-  --purple-500: #a855f7;
-  --cyan-500: #06b6d4;
-}
-
-/* ===== تنظیمات پایه ===== */
+/* ============================================
+   بازنشانی و تنظیمات پایه
+   ============================================ */
 * {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
+/* ============================================
+   متغیرهای رنگی برای تم تاریک
+   ============================================ */
+:root {
+  --bg: #0a0e1a;
+  --card: rgba(15, 23, 42, 0.7);
+  --text: #f1f5f9;
+  --primary-500: #ef4444;
+  --accent-400: #fbbf24;
+  --border: rgba(255, 255, 255, 0.1);
+}
+
+/* متغیرهای رنگی برای تم روشن */
+body:not(.dark) {
+  --bg: #f1f5f9;
+  --card: rgba(255, 255, 255, 0.7);
+  --text: #0f172a;
+}
+
+/* ============================================
+   استایل‌های پایه صفحه
+   ============================================ */
 body {
-  background: linear-gradient(135deg, #0a0e1a 0%, #0f1419 100%);
-  color: #f1f5f9;
   font-family: "Vazirmatn", sans-serif;
-  -webkit-font-smoothing: antialiased;
+  background: linear-gradient(135deg, var(--bg), #0f1419);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background 0.3s, color 0.3s;
 }
 
-/* ===== تم روشن ===== */
-html:not(.dark) body {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  color: #0f172a;
+/* ============================================
+   دکمه تغییر تم (تاریک/روشن)
+   ============================================ */
+.theme-toggle {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(20px);
 }
 
-/* ===== Glass Card ===== */
+/* نمایش آیکون خورشید در تم تاریک */
+.dark .sun-icon {
+  opacity: 1;
+  transform: rotate(0deg);
+}
+
+.dark .moon-icon {
+  opacity: 0;
+  transform: rotate(180deg);
+}
+
+/* نمایش آیکون ماه در تم روشن */
+body:not(.dark) .sun-icon {
+  opacity: 0;
+  transform: rotate(-180deg);
+}
+
+body:not(.dark) .moon-icon {
+  opacity: 1;
+  transform: rotate(0deg);
+}
+
+/* ============================================
+   کارت‌های شیشه‌ای (Glass Effect)
+   ============================================ */
 .glass-card {
-  background: rgba(15, 23, 42, 0.7);
+  background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s;
 }
 
-html:not(.dark) .glass-card {
+/* کارت‌ها در تم روشن */
+body:not(.dark) .glass-card {
   background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .glass-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
-/* ===== دکمه تم ===== */
-.theme-toggle {
+/* ============================================
+   دکمه‌های آیکون
+   ============================================ */
+.btn-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+  color: var(--text);
+}
+
+.btn-icon:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================
+   دکمه‌های اصلی
+   ============================================ */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+/* دکمه اصلی (Primary) */
+.btn-primary {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  border: none;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+}
+
+/* دکمه ثانویه (Secondary) */
+.btn-secondary {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-html:not(.dark) .sun-icon {
-  opacity: 1;
-  transform: rotate(0) scale(1);
-}
-
-html:not(.dark) .moon-icon {
-  opacity: 0;
-  transform: rotate(180deg) scale(0);
-  position: absolute;
-}
-
-.dark .sun-icon {
-  opacity: 0;
-  transform: rotate(-180deg) scale(0);
-  position: absolute;
-}
-
-.dark .moon-icon {
-  opacity: 1;
-  transform: rotate(0) scale(1);
-}
-
-/* ===== انیمیشن‌ها ===== */
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-.animate-gradient {
-  background-size: 200% 200%;
-  animation: gradient 4s ease infinite;
-}
-
-.animate-bounce-slow {
-  animation: bounce 3s infinite;
-}
-
-@keyframes bounce {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
-}
-
-@keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-slide-up {
-  animation: slide-up 0.3s ease;
-}
-
-/* ===== Badge ===== */
-.badge {
-  padding: 4px 12px;
-  background: linear-gradient(
-    135deg,
-    rgba(239, 68, 68, 0.2),
-    rgba(251, 191, 36, 0.2)
-  );
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #ef4444;
-}
-
-/* ===== دکمه‌ها ===== */
-.btn {
-  padding: 10px 16px;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 14px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: all 0.3s;
-  cursor: pointer;
-  border: none;
-  white-space: nowrap;
-}
-
-.btn:active {
-  transform: scale(0.95);
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  color: white;
-  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
-}
-
-.btn-primary:hover {
-  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.5);
-  transform: translateY(-2px);
-}
-
-.btn-secondary {
-  background: linear-gradient(135deg, #06b6d4, #0284c7);
-  color: white;
-  box-shadow: 0 4px 16px rgba(6, 182, 212, 0.3);
-}
-
-.btn-secondary:hover {
-  box-shadow: 0 8px 24px rgba(6, 182, 212, 0.5);
-  transform: translateY(-2px);
-}
-
+/* دکمه تاکیدی (Accent) */
 .btn-accent {
   background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  border: none;
   color: #1e293b;
   font-weight: 700;
-  box-shadow: 0 4px 16px rgba(251, 191, 36, 0.3);
 }
 
 .btn-accent:hover {
-  box-shadow: 0 8px 24px rgba(251, 191, 36, 0.5);
-  transform: translateY(-2px);
+  background: linear-gradient(135deg, #f59e0b, #d97706);
 }
 
+/* دکمه شفاف (Ghost) */
 .btn-ghost {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: inherit;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.btn-icon {
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  border-radius: 12px;
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s;
-  cursor: pointer;
-  color: inherit;
 }
 
-.btn-icon:hover {
-  transform: scale(1.1);
-  background: rgba(255, 255, 255, 0.1);
-}
-
-/* ===== تب‌ها ===== */
+/* ============================================
+   تب‌ها (Tabs)
+   ============================================ */
 .tab-btn {
-  flex: 1;
-  padding: 10px 12px;
-  background: transparent;
-  border: none;
-  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.5);
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s;
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0.6;
+  color: var(--text);
+  flex: 1;
+  min-width: 0;
 }
 
 .tab-btn:hover {
+  opacity: 0.8;
   background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.8);
 }
 
+/* تب فعال */
 .tab-btn.active {
-  background: linear-gradient(
-    135deg,
-    rgba(239, 68, 68, 0.2),
-    rgba(168, 85, 247, 0.2)
-  );
-  color: white;
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+  opacity: 1;
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
 }
 
+/* محتوای تب‌ها */
 .tab-content {
   display: none;
 }
 
 .tab-content.active {
   display: block;
-  animation: fadeInUp 0.5s ease;
+  animation: fadeIn 0.3s ease;
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ===== Template Button ===== */
+/* ============================================
+   دکمه‌های قالب
+   ============================================ */
 .template-btn {
-  padding: 8px 12px;
+  padding: 10px;
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  font-size: 12px;
-  transition: all 0.3s;
   cursor: pointer;
-  color: inherit;
+  transition: all 0.3s;
+  font-size: 13px;
+  color: var(--text);
 }
 
 .template-btn:hover {
   background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(239, 68, 68, 0.5);
+  border-color: #ef4444;
   transform: translateY(-2px);
 }
 
-/* ===== Slider ===== */
+/* ============================================
+   اسلایدرها (Range Inputs)
+   ============================================ */
 .slider {
+  width: 100%;
   height: 8px;
-  border-radius: 10px;
   background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
   outline: none;
   -webkit-appearance: none;
   cursor: pointer;
+  transition: all 0.3s;
 }
 
+.slider:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* دسته اسلایدر برای کروم */
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 20px;
   height: 20px;
-  border-radius: 50%;
   background: linear-gradient(135deg, #ef4444, #fbbf24);
+  border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.5);
-  transition: all 0.2s;
+  box-shadow: 0 2px 10px rgba(239, 68, 68, 0.5);
+  transition: all 0.3s;
 }
 
 .slider::-webkit-slider-thumb:hover {
   transform: scale(1.2);
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.7);
 }
 
+/* دسته اسلایدر برای فایرفاکس */
 .slider::-moz-range-thumb {
   width: 20px;
   height: 20px;
-  border: none;
-  border-radius: 50%;
   background: linear-gradient(135deg, #ef4444, #fbbf24);
+  border-radius: 50%;
+  border: none;
   cursor: pointer;
+  box-shadow: 0 2px 10px rgba(239, 68, 68, 0.5);
+  transition: all 0.3s;
 }
 
-/* ===== Select ===== */
+.slider::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.7);
+}
+
+/* ============================================
+   سلکت (Select Dropdown)
+   ============================================ */
 .select-custom {
-  padding: 10px 12px;
+  width: 100%;
+  padding: 10px;
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border);
   border-radius: 10px;
-  color: inherit;
-  font-size: 14px;
   cursor: pointer;
+  font-size: 14px;
+  color: var(--text);
+  font-family: inherit;
   transition: all 0.3s;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: left 12px center;
-  padding-left: 36px;
 }
 
 .select-custom:focus {
   outline: none;
-  border-color: #ef4444;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  border-color: var(--primary-500);
+  background: rgba(255, 255, 255, 0.08);
 }
 
-/* ===== Toggle Switch ===== */
+/* ============================================
+   دکمه‌های Toggle (سوئیچ)
+   ============================================ */
 .toggle-label {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   cursor: pointer;
   user-select: none;
-  color: inherit;
-  opacity: 0.7;
-  transition: opacity 0.3s;
-}
-
-.toggle-label:hover {
-  opacity: 1;
 }
 
 .toggle-switch {
@@ -382,199 +331,168 @@ html:not(.dark) .moon-icon {
   width: 44px;
   height: 24px;
   background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
+  border-radius: 12px;
   transition: all 0.3s;
   flex-shrink: 0;
 }
 
-.toggle-switch::after {
+/* دایره داخل سوئیچ */
+.toggle-switch::before {
   content: "";
   position: absolute;
-  top: 2px;
-  right: 2px;
   width: 18px;
   height: 18px;
-  background: #94a3b8;
-  border-radius: 50%;
-  transition: all 0.3s;
-}
-
-.toggle-label input:checked + .toggle-switch {
-  background: linear-gradient(135deg, #ef4444, #fbbf24);
-  border-color: transparent;
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-}
-
-.toggle-label input:checked + .toggle-switch::after {
-  transform: translateX(-20px);
   background: white;
+  border-radius: 50%;
+  top: 3px;
+  left: 3px;
+  transition: all 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* ===== File Input ===== */
+/* حالت فعال */
+input:checked + .toggle-switch {
+  background: linear-gradient(135deg, #ef4444, #fbbf24);
+}
+
+input:checked + .toggle-switch::before {
+  transform: translateX(20px);
+}
+
+/* ============================================
+   ورودی فایل
+   ============================================ */
 .file-input {
-  font-size: 13px;
-  padding: 8px;
+  width: 100%;
+  padding: 10px;
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border);
   border-radius: 10px;
-  color: inherit;
   cursor: pointer;
+  font-size: 13px;
+  color: var(--text);
   transition: all 0.3s;
 }
 
 .file-input:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--primary-500);
 }
 
-.file-input::file-selector-button {
-  padding: 6px 16px;
-  margin-left: 12px;
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  border: none;
-  border-radius: 8px;
-  color: white;
+/* ============================================
+   بج (Badge)
+   ============================================ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  background: rgba(239, 68, 68, 0.2);
+  border-radius: 12px;
+  font-size: 12px;
   font-weight: 600;
-  cursor: pointer;
+  color: #ef4444;
 }
 
-/* ===== Viewport ===== */
-.viewport-container {
-  transition: all 0.5s;
+/* ============================================
+   کلیدهای میانبر (Keyboard Keys)
+   ============================================ */
+.kbd {
+  display: inline-block;
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  font-family: "Courier New", monospace;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* ============================================
+   Viewport (نمایشگر اصلی)
+   ============================================ */
 .viewport {
-  aspect-ratio: 16 / 9;
-  min-height: 400px;
-  max-height: 720px;
   position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
   overflow: hidden;
-  transition: all 0.5s;
+  transition: all 0.3s;
 }
 
+/* حالت تمام صفحه */
 .viewport.fullscreen {
   position: fixed;
   inset: 0;
-  z-index: 9999;
-  border-radius: 0 !important;
-  aspect-ratio: auto !important;
-  min-height: 100vh !important;
-  max-height: 100vh !important;
+  z-index: 999;
+  border-radius: 0;
+  aspect-ratio: auto;
 }
 
-/* ===== افکت‌ها ===== */
-#particlesCanvas.active {
-  opacity: 0.5 !important;
-  transition: opacity 0.5s;
-}
-
-#filmGrain {
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='3' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  mix-blend-mode: overlay;
-  animation: grain 0.4s steps(6) infinite;
-}
-
-#filmGrain.active {
-  opacity: 0.2 !important;
-  transition: opacity 0.5s;
-}
-
-@keyframes grain {
-  0%,
-  100% {
-    transform: translate(0, 0);
-  }
-  25% {
-    transform: translate(-5%, -5%);
-  }
-  50% {
-    transform: translate(-10%, 5%);
-  }
-  75% {
-    transform: translate(5%, -10%);
-  }
-}
-
-#vignette.active {
-  opacity: 1 !important;
-  background: radial-gradient(
-    ellipse at center,
-    transparent 0%,
-    transparent 30%,
-    rgba(0, 0, 0, 0.3) 60%,
-    rgba(0, 0, 0, 0.8) 100%
-  );
-  transition: opacity 0.5s;
-}
-
-/* ===== Scene ===== */
-.scene-container {
-  width: 100%;
-  height: 100%;
+/* دکمه‌های کنترل داخل Viewport */
+.control-btn {
+  width: 50px;
+  height: 50px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.scene-text {
-  text-align: center;
-  max-width: 90%;
-  padding: 16px;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9), 0 4px 20px rgba(0, 0, 0, 0.8);
-}
-
-.scene-title {
-  font-size: clamp(14px, 2vw, 20px);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.3em;
-  color: #fbbf24;
-  opacity: 0.9;
-  margin-bottom: 16px;
-}
-
-.scene-main {
-  font-weight: 900;
-  line-height: 1.1;
+  cursor: pointer;
+  transition: all 0.3s;
   color: white;
-  font-size: clamp(32px, 5vw, 72px);
 }
 
-.scene-main.glow {
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.8),
-    0 0 40px rgba(239, 68, 68, 0.6), 0 0 60px rgba(239, 68, 68, 0.4);
+.control-btn:hover {
+  background: rgba(239, 68, 68, 0.8);
+  border-color: #ef4444;
+  transform: scale(1.1);
 }
 
-/* ===== انتقال‌ها ===== */
-.transition-fade.enter {
+.control-btn-large {
+  width: 70px;
+  height: 70px;
+}
+
+/* ============================================
+   انیمیشن‌های انتقال صحنه
+   ============================================ */
+
+/* محو شدن (Fade) */
+.fade-in {
   animation: fadeIn 0.8s ease forwards;
 }
-.transition-fade.exit {
+
+.fade-out {
   animation: fadeOut 0.6s ease forwards;
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(30px) scale(0.95);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
 @keyframes fadeOut {
   to {
     opacity: 0;
-    transform: translateY(-30px) scale(1.05);
+    transform: translateY(-30px);
   }
 }
 
-.transition-slide.enter {
+/* اسلاید (Slide) */
+.slide-in {
   animation: slideIn 0.8s ease forwards;
 }
-.transition-slide.exit {
+
+.slide-out {
   animation: slideOut 0.6s ease forwards;
 }
 
@@ -596,10 +514,12 @@ html:not(.dark) .moon-icon {
   }
 }
 
-.transition-zoom.enter {
+/* زوم (Zoom) */
+.zoom-in {
   animation: zoomIn 0.8s ease forwards;
 }
-.transition-zoom.exit {
+
+.zoom-out {
   animation: zoomOut 0.6s ease forwards;
 }
 
@@ -621,10 +541,12 @@ html:not(.dark) .moon-icon {
   }
 }
 
-.transition-blur.enter {
+/* تار شدن (Blur) */
+.blur-in {
   animation: blurIn 0.8s ease forwards;
 }
-.transition-blur.exit {
+
+.blur-out {
   animation: blurOut 0.6s ease forwards;
 }
 
@@ -646,10 +568,12 @@ html:not(.dark) .moon-icon {
   }
 }
 
-.transition-rotate.enter {
+/* چرخش (Rotate) */
+.rotate-in {
   animation: rotateIn 0.8s ease forwards;
 }
-.transition-rotate.exit {
+
+.rotate-out {
   animation: rotateOut 0.6s ease forwards;
 }
 
@@ -671,75 +595,240 @@ html:not(.dark) .moon-icon {
   }
 }
 
-.kb-zoom {
-  transition: transform 15s ease-out;
+/* افکت‌های جدید */
+/* لرزش دوربین (Shake) */
+.shake-effect {
+  animation: shake 0.5s infinite;
 }
 
-/* ===== کنترل‌ها ===== */
-.control-btn {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  transition: all 0.3s;
-  cursor: pointer;
+@keyframes shake {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translate(-2px, -2px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translate(2px, 2px);
+  }
 }
 
-.control-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: scale(1.1);
+/* افکت Glitch */
+.glitch-effect {
+  animation: glitch 1s infinite;
 }
 
-.control-btn-large {
-  width: 64px;
-  height: 64px;
+@keyframes glitch {
+  0%,
+  100% {
+    transform: translate(0);
+    filter: hue-rotate(0deg);
+  }
+  20% {
+    transform: translate(-2px, 2px);
+    filter: hue-rotate(90deg);
+  }
+  40% {
+    transform: translate(2px, -2px);
+    filter: hue-rotate(180deg);
+  }
+  60% {
+    transform: translate(-2px, -2px);
+    filter: hue-rotate(270deg);
+  }
+  80% {
+    transform: translate(2px, 2px);
+    filter: hue-rotate(360deg);
+  }
 }
 
-/* ===== Kbd ===== */
-.kbd {
-  padding: 4px 8px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
-  font-size: 11px;
-  font-family: monospace;
-  font-weight: 700;
+/* انحراف رنگی (Chromatic Aberration) */
+.chromatic-effect {
+  position: relative;
 }
 
-/* ===== Responsive ===== */
-@media (max-width: 640px) {
+.chromatic-effect::before,
+.chromatic-effect::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.chromatic-effect::before {
+  color: #ff0000;
+  z-index: -1;
+  animation: chromatic-red 2s infinite;
+}
+
+.chromatic-effect::after {
+  color: #00ffff;
+  z-index: -2;
+  animation: chromatic-cyan 2s infinite;
+}
+
+@keyframes chromatic-red {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-3px, -2px);
+  }
+}
+
+@keyframes chromatic-cyan {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(3px, 2px);
+  }
+}
+
+/* ============================================
+   انیمیشن‌های کمکی
+   ============================================ */
+
+/* شناور شدن */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* گرادیانت متحرک */
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 3s ease infinite;
+}
+
+/* پرش آرام */
+@keyframes bounce-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 2s ease-in-out infinite;
+}
+
+/* اسلاید به بالا */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+/* ============================================
+   طراحی ریسپانسیو (Responsive)
+   ============================================ */
+
+/* تبلت‌ها و موبایل‌های بزرگ */
+@media (max-width: 1024px) {
   .viewport {
-    min-height: 300px;
     aspect-ratio: 4 / 3;
   }
+}
 
-  .scene-main {
-    font-size: clamp(24px, 6vw, 48px) !important;
+/* موبایل‌های کوچک */
+@media (max-width: 640px) {
+  body {
+    font-size: 14px;
+  }
+
+  .viewport {
+    aspect-ratio: 4 / 3;
   }
 
   .control-btn {
     width: 40px;
     height: 40px;
   }
+
   .control-btn-large {
-    width: 56px;
-    height: 56px;
+    width: 60px;
+    height: 60px;
+  }
+
+  .tab-btn {
+    font-size: 11px;
+    padding: 8px 12px;
+  }
+
+  .btn {
+    font-size: 13px;
+    padding: 8px 14px;
+  }
+
+  .glass-card {
+    padding: 12px;
   }
 }
 
-@media (min-width: 1920px) {
-  .viewport {
-    max-height: 900px;
+/* موبایل‌های خیلی کوچک */
+@media (max-width: 375px) {
+  .tab-btn span {
+    display: none;
+  }
+
+  .tab-btn {
+    padding: 10px;
   }
 }
 
-/* ===== Utilities ===== */
+/* ============================================
+   کلاس‌های کمکی
+   ============================================ */
+.hidden {
+  display: none !important;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -750,25 +839,4 @@ html:not(.dark) .moon-icon {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border-width: 0;
-}
-
-::selection {
-  background-color: rgba(239, 68, 68, 0.3);
-  color: white;
-}
-
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-}
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #ef4444, #fbbf24);
-  border-radius: 10px;
-}
-
-*:focus-visible {
-  outline: 2px solid rgba(239, 68, 68, 0.5);
-  outline-offset: 2px;
 }

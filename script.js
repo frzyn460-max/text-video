@@ -1,1019 +1,1636 @@
-// ===== کد جاوااسکریپت کامل و کارآمد =====
-
-// المان‌ها
-const $ = (id) => document.getElementById(id);
-const $$ = (sel) => document.querySelectorAll(sel);
-
-// دریافت همه المان‌ها
-const elements = {
-  inputText: $("inputText"),
-  btnPlay: $("btnPlay"),
-  btnStop: $("btnStop"),
-  btnPrev: $("btnPrev"),
-  btnNext: $("btnNext"),
-  btnRecord: $("btnRecord"),
-  btnFullscreen: $("btnFullscreen"),
-  btnExport: $("btnExport"),
-  btnImport: $("btnImport"),
-
-  speedRange: $("speedRange"),
-  speedLabel: $("speedLabel"),
-  durationInput: $("durationInput"),
-  durationValue: $("durationValue"),
-  fontSizeRange: $("fontSizeRange"),
-  fontSizeValue: $("fontSizeValue"),
-  transitionSelect: $("transitionSelect"),
-
-  typeEffect: $("typeEffect"),
-  kenburns: $("kenburns"),
-  particlesEffect: $("particlesEffect"),
-  vignetteEffect: $("vignetteEffect"),
-  glowEffect: $("glowEffect"),
-  grainyEffect: $("grainyEffect"),
-
-  bgImageFile: $("bgImageFile"),
-  bgImage: $("bgImage"),
-  bgPreview: $("bgPreview"),
-  bgPreviewImg: $("bgPreviewImg"),
-  btnRemoveBg: $("btnRemoveBg"),
-  bgOpacityRange: $("bgOpacityRange"),
-  bgOpacityValue: $("bgOpacityValue"),
-  bgBlurRange: $("bgBlurRange"),
-  bgBlurValue: $("bgBlurValue"),
-
-  audioFile: $("audioFile"),
-  audioToggle: $("audioToggle"),
-  volumeRange: $("volumeRange"),
-  volumeLabel: $("volumeLabel"),
-
-  viewport: $("viewport"),
-  sceneStage: $("sceneStage"),
-  progressBar: $("progressBar"),
-  currentSceneEl: $("currentScene"),
-  totalScenesEl: $("totalScenes"),
-  sceneCount: $("sceneCount"),
-  timeDisplay: $("timeDisplay"),
-  statusText: $("statusText"),
-  wordCount: $("wordCount"),
-  charCount: $("charCount"),
-
-  themeToggle: $("themeToggle"),
-  particlesCanvas: $("particlesCanvas"),
-  filmGrain: $("filmGrain"),
-  vignette: $("vignette"),
-
-  aiAssistant: $("aiAssistant"),
-  aiModal: $("aiModal"),
-  closeAiModal: $("closeAiModal"),
-  aiPrompt: $("aiPrompt"),
-  aiGenerateBtn: $("aiGenerateBtn"),
-  aiCancelBtn: $("aiCancelBtn"),
-  btnAiGenerate: $("btnAiGenerate"),
-  btnAiOptimize: $("btnAiOptimize"),
-
-  viewportPlay: $("viewportPlay"),
-  viewportPrev: $("viewportPrev"),
-  viewportNext: $("viewportNext"),
-
-  importFile: $("importFile"),
-  visitors: $("visitors"),
-  projectCount: $("projectCount"),
-};
-
-// State
-let state = {
-  scenes: [],
-  current: 0,
-  playing: false,
-  timer: null,
-  startTime: null,
-  elapsedTime: 0,
-  mediaRecorder: null,
-  recordedChunks: [],
-  audio: new Audio(),
-  particlesCtx: null,
-  particles: [],
-  animationFrame: null,
-  bgImageSrc: null,
-};
-
-state.audio.loop = true;
-
-// ===== تم =====
-function initTheme() {
-  const theme = localStorage.getItem("theme") || "dark";
-  document.documentElement.classList.toggle("dark", theme === "dark");
+// اعمال فیلترهای رنگی
+// ============================================
+function applyColorFilters() {
+  if (!els.viewport) return;
+  const brightness = state.settings.brightness / 100;
+  const contrast = state.settings.contrast / 100;
+  const saturation = state.settings.saturation / 100;
+  els.viewport.style.filter = `brightness(${brightness}) contrast(${contrast}) saturate(${saturation})`;
 }
 
-if (elements.themeToggle) {
-  elements.themeToggle.addEventListener("click", () => {
-    const isDark = document.documentElement.classList.toggle("dark");
-    localStorage.setItem("theme", isDark ? "dark" : "light");
-    setStatus(isDark ? "تم تاریک" : "تم روشن");
-  });
-}
-
-// ===== ذرات =====
-function initParticles() {
-  if (!elements.particlesCanvas) return;
-  elements.particlesCanvas.width = elements.viewport.offsetWidth;
-  elements.particlesCanvas.height = elements.viewport.offsetHeight;
-  state.particlesCtx = elements.particlesCanvas.getContext("2d");
-
-  state.particles = [];
-  const count = Math.min(80, Math.floor(elements.viewport.offsetWidth / 10));
-
-  for (let i = 0; i < count; i++) {
-    state.particles.push({
-      x: Math.random() * elements.particlesCanvas.width,
-      y: Math.random() * elements.particlesCanvas.height,
-      vx: (Math.random() - 0.5) * 0.3,
-      vy: (Math.random() - 0.5) * 0.3,
-      size: Math.random() * 2 + 0.5,
-      opacity: Math.random() * 0.4 + 0.1,
-    });
+// ============================================
+// اعمال نسبت تصویر
+// ============================================
+function applyAspectRatio() {
+  if (!els.viewport) return;
+  const ratio = state.settings.aspectRatio;
+  const ratioMap = {
+    "16:9": "16 / 9",
+    "21:9": "21 / 9",
+    "4:3": "4 / 3",
+    "1:1": "1 / 1",
+  };
+  if (ratioMap[ratio]) {
+    els.viewport.style.aspectRatio = ratioMap[ratio];
   }
 }
 
-function animateParticles() {
-  if (!elements.particlesEffect || !elements.particlesEffect.checked) {
-    elements.particlesCanvas?.classList.remove("active");
-    cancelAnimationFrame(state.animationFrame);
-    return;
-  }
+// ============================================
+// میانبرهای کیبورد
+// ============================================
+function setupKeyboardShortcuts() {
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT") return;
 
-  elements.particlesCanvas.classList.add("active");
-  state.particlesCtx.clearRect(
-    0,
-    0,
-    elements.particlesCanvas.width,
-    elements.particlesCanvas.height
-  );
-
-  state.particles.forEach((p) => {
-    p.x += p.vx;
-    p.y += p.vy;
-
-    if (p.x < 0 || p.x > elements.particlesCanvas.width) p.vx *= -1;
-    if (p.y < 0 || p.y > elements.particlesCanvas.height) p.vy *= -1;
-
-    state.particlesCtx.beginPath();
-    state.particlesCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-    state.particlesCtx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
-    state.particlesCtx.fill();
-  });
-
-  state.animationFrame = requestAnimationFrame(animateParticles);
-}
-
-if (elements.particlesEffect) {
-  elements.particlesEffect.addEventListener("change", () => {
-    if (elements.particlesEffect.checked) {
-      initParticles();
-      animateParticles();
+    switch (e.key) {
+      case " ":
+        e.preventDefault();
+        state.isPlaying ? (state.isPaused ? play() : pause()) : play();
+        break;
+      case "ArrowLeft":
+        e.preventDefault();
+        nextScene();
+        break;
+      case "ArrowRight":
+        e.preventDefault();
+        prevScene();
+        break;
+      case "f":
+      case "F":
+        e.preventDefault();
+        toggleFullscreen();
+        break;
+      case "Escape":
+        if (document.fullscreenElement) {
+          document.exitFullscreen();
+        }
+        break;
     }
   });
 }
 
-if (elements.vignetteEffect) {
-  elements.vignetteEffect.addEventListener("change", () => {
-    elements.vignette?.classList.toggle(
-      "active",
-      elements.vignetteEffect.checked
-    );
-  });
-}
+// ============================================
+// پارس کردن صحنه‌ها
+// ============================================
+function parseScenes() {
+  if (!els.inputText) return;
+  const text = els.inputText.value.trim();
 
-if (elements.grainyEffect) {
-  elements.grainyEffect.addEventListener("change", () => {
-    elements.filmGrain?.classList.toggle(
-      "active",
-      elements.grainyEffect.checked
-    );
-  });
-}
-
-window.addEventListener("resize", () => {
-  if (elements.particlesEffect?.checked) initParticles();
-});
-
-// ===== توابع کمکی =====
-function parseScenes(text) {
-  return text
-    .split(/\n+/)
-    .map((s) => s.trim())
-    .filter(Boolean);
-}
-
-function setStatus(text) {
-  if (elements.statusText) elements.statusText.textContent = text;
-}
-
-function clamp(v, min, max) {
-  return Math.max(min, Math.min(max, v));
-}
-
-function formatTime(sec) {
-  const m = Math.floor(sec / 60);
-  const s = Math.floor(sec % 60);
-  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-}
-
-function updateSceneCount() {
-  if (!elements.inputText) return;
-  state.scenes = parseScenes(elements.inputText.value);
-  if (elements.sceneCount)
-    elements.sceneCount.textContent = state.scenes.length + " صحنه";
-  if (elements.totalScenesEl)
-    elements.totalScenesEl.textContent = state.scenes.length || 1;
-  if (elements.currentSceneEl)
-    elements.currentSceneEl.textContent = Math.min(
-      state.current + 1,
-      state.scenes.length
-    );
-  updateWordCount();
-}
-
-function updateWordCount() {
-  if (!elements.inputText || !elements.wordCount || !elements.charCount) return;
-  const text = elements.inputText.value;
-  const words = text.trim().split(/\s+/).filter(Boolean).length;
-  elements.wordCount.textContent = words;
-  elements.charCount.textContent = text.length;
-}
-
-if (elements.inputText) {
-  elements.inputText.addEventListener("input", updateSceneCount);
-}
-
-// ===== رندر صحنه =====
-function createSceneElement(raw) {
-  const container = document.createElement("div");
-  container.className = "scene-container";
-
-  let title = null;
-  let main = raw;
-
-  if (raw.includes(":")) {
-    const parts = raw.split(":");
-    title = parts.shift().trim();
-    main = parts.join(":").trim();
-  }
-
-  const textBlock = document.createElement("div");
-  textBlock.className = "scene-text";
-
-  if (title) {
-    const t = document.createElement("div");
-    t.className = "scene-title";
-    t.textContent = title;
-    textBlock.appendChild(t);
-  }
-
-  const m = document.createElement("div");
-  m.className = "scene-main";
-  if (elements.glowEffect?.checked) m.classList.add("glow");
-  if (elements.fontSizeRange)
-    m.style.fontSize = elements.fontSizeRange.value + "px";
-  m.textContent = main;
-  textBlock.appendChild(m);
-
-  container.appendChild(textBlock);
-
-  return { container, mainEl: m };
-}
-
-function typeWrite(el, text, speed = 1) {
-  return new Promise((resolve) => {
-    if (!text || !el) return resolve();
-    el.textContent = "";
-    const len = text.length;
-    const delay = 8;
-    const step = Math.max(1, Math.floor(len / 60));
-    let p = 0;
-
-    const iv = setInterval(() => {
-      p += step;
-      if (p > len) p = len;
-      el.textContent = text.slice(0, p);
-
-      if (p >= len) {
-        clearInterval(iv);
-        setTimeout(resolve, 100);
-      }
-    }, delay / speed);
-  });
-}
-
-async function showScene(i) {
-  if (i < 0 || i >= state.scenes.length || !elements.sceneStage) return;
-  state.current = i;
-  elements.sceneStage.innerHTML = "";
-
-  const { container, mainEl } = createSceneElement(state.scenes[i]);
-  elements.sceneStage.appendChild(container);
-
-  const transition = elements.transitionSelect?.value || "fade";
-  container.classList.add(`transition-${transition}`, "enter");
-
-  if (elements.kenburns?.checked) {
-    const zoom = 1 + Math.random() * 0.05;
-    const rx = Math.random() * 10 - 5;
-    const ry = Math.random() * 8 - 4;
-
-    container.style.transformOrigin = `${50 + rx}% ${50 + ry}%`;
-    container.classList.add("kb-zoom");
-
-    requestAnimationFrame(() => {
-      container.style.transform = `scale(${zoom + 0.08})`;
-    });
-  }
-
-  if (elements.typeEffect?.checked && mainEl) {
-    await typeWrite(mainEl, mainEl.textContent, getSpeed());
-  }
-
-  updateProgress();
-
-  const durMs = (getSceneDuration() * 1000) / getSpeed();
-
-  return new Promise((resolve) => {
-    state.timer = setTimeout(() => {
-      container.classList.remove("enter");
-      container.classList.add("exit");
-      setTimeout(resolve, 600);
-    }, durMs);
-  });
-}
-
-function getSpeed() {
-  return parseFloat(elements.speedRange?.value || 1);
-}
-
-function getSceneDuration() {
-  return clamp(parseFloat(elements.durationInput?.value || 3), 0.5, 30);
-}
-
-// ===== پخش =====
-async function playAll(fromIndex = 0) {
-  if (state.playing) return;
-
-  state.scenes = parseScenes(elements.inputText?.value || "");
-  if (!state.scenes.length) {
-    setStatus("هیچ صحنه‌ای وجود ندارد");
+  if (!text) {
+    state.scenes = [];
+    updateSceneCount();
     return;
   }
 
-  state.playing = true;
-  state.startTime = Date.now() - state.elapsedTime * 1000;
-  setStatus("در حال پخش...");
+  const sceneBlocks = text.split(/(?=صحنه)/);
 
-  if (elements.btnPlay) {
-    elements.btnPlay.innerHTML =
-      '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg><span>مکث</span>';
+  state.scenes = sceneBlocks
+    .map((block) => {
+      const lines = block.trim().split("\n").filter((l) => l.trim());
+      if (lines.length === 0) return null;
+
+      const title = lines[0].replace(/صحنه.*?:/i, "").trim();
+      const content = lines
+        .slice(1)
+        .join(" ")
+        .replace(/تصویر:|صدا:/gi, "")
+        .trim();
+
+      return { title, content };
+    })
+    .filter(Boolean);
+
+  updateSceneCount();
+}
+
+// ============================================
+// به‌روزرسانی آمار متن
+// ============================================
+function updateStats() {
+  if (!els.inputText) return;
+  const text = els.inputText.value;
+  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+  const chars = text.length;
+
+  if (els.wordCount) els.wordCount.textContent = words;
+  if (els.charCount) els.charCount.textContent = chars;
+}
+
+// ============================================
+// به‌روزرسانی تعداد صحنه‌ها
+// ============================================
+function updateSceneCount() {
+  const count = state.scenes.length;
+  if (els.sceneCount) els.sceneCount.textContent = `${count} صحنه`;
+  if (els.totalScenes) els.totalScenes.textContent = count;
+
+  if (count > 0) {
+    if (els.currentScene) els.currentScene.textContent = Math.min(state.currentScene + 1, count);
+  } else {
+    if (els.currentScene) els.currentScene.textContent = "0";
+  }
+}
+
+// ============================================
+// پخش صحنه‌ها
+// ============================================
+async function play() {
+  if (state.scenes.length === 0) {
+    showStatus("لطفاً ابتدا متن صحنه‌ها را وارد کنید", "error");
+    return;
   }
 
-  const timerInterval = setInterval(() => {
-    if (!state.playing) {
-      clearInterval(timerInterval);
+  if (state.isPaused) {
+    state.isPaused = false;
+    state.isPlaying = true;
+    updatePlayButton();
+    showStatus("ادامه پخش...", "playing");
+    await continuePlayback();
+    return;
+  }
+
+  state.isPlaying = true;
+  state.isPaused = false;
+  updatePlayButton();
+  showStatus("در حال پخش...", "playing");
+
+  if (state.audio && state.audio.paused) {
+    state.audio.play().catch(err => console.log("خطا در پخش موسیقی:", err));
+  }
+
+  await continuePlayback();
+}
+
+// ============================================
+// ادامه پخش
+// ============================================
+async function continuePlayback() {
+  for (let i = state.currentScene; i < state.scenes.length; i++) {
+    if (!state.isPlaying || state.isPaused) break;
+
+    state.currentScene = i;
+    updateSceneCount();
+
+    await showScene(state.scenes[i], i);
+
+    if (i < state.scenes.length - 1 && !state.isPaused) {
+      await wait((state.settings.duration * 1000) / state.settings.speed);
+    }
+  }
+
+  if (state.isPlaying && !state.isPaused) {
+    state.currentScene = 0;
+    stop();
+  }
+}
+
+// ============================================
+// توقف موقت
+// ============================================
+function pause() {
+  if (!state.isPlaying) return;
+  state.isPaused = true;
+  state.isPlaying = false;
+  updatePlayButton();
+  showStatus("توقف موقت", "paused");
+  if (state.audio && !state.audio.paused) {
+    state.audio.pause();
+  }
+}
+
+// ============================================
+// توقف پخش
+// ============================================
+function stop() {
+  state.isPlaying = false;
+  state.isPaused = false;
+  state.currentScene = 0;
+  updatePlayButton();
+  updateSceneCount();
+  if (els.sceneStage) els.sceneStage.innerHTML = "";
+  if (els.progressBar) els.progressBar.style.width = "0%";
+  showStatus("پخش متوقف شد", "stopped");
+  if (state.audio) {
+    state.audio.pause();
+    state.audio.currentTime = 0;
+  }
+}
+
+// ============================================
+// صحنه قبلی
+// ============================================
+function prevScene() {
+  if (state.currentScene > 0) {
+    state.currentScene--;
+    updateSceneCount();
+    if (state.isPlaying && !state.isPaused) {
+      showScene(state.scenes[state.currentScene], state.currentScene);
+    }
+  }
+}
+
+// ============================================
+// صحنه بعدی
+// ============================================
+function nextScene() {
+  if (state.currentScene < state.scenes.length - 1) {
+    state.currentScene++;
+    updateSceneCount();
+    if (state.isPlaying && !state.isPaused) {
+      showScene(state.scenes[state.currentScene], state.currentScene);
+    }
+  }
+}
+
+// ============================================
+// به‌روزرسانی دکمه پخش
+// ============================================
+function updatePlayButton() {
+  const playBtn = document.getElementById("btnPlay");
+  const pauseBtn = document.getElementById("btnPause");
+  const viewportPlayBtn = document.getElementById("viewportPlay");
+
+  if (state.isPlaying && !state.isPaused) {
+    if (playBtn) playBtn.classList.add("hidden");
+    if (pauseBtn) pauseBtn.classList.remove("hidden");
+    if (viewportPlayBtn) {
+      viewportPlayBtn.innerHTML = '<svg class="w-6 h-6 sm:w-8 sm:h-8" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+    }
+  } else {
+    if (playBtn) playBtn.classList.remove("hidden");
+    if (pauseBtn) pauseBtn.classList.add("hidden");
+    if (viewportPlayBtn) {
+      viewportPlayBtn.innerHTML = '<svg class="w-6 h-6 sm:w-8 sm:h-8" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+    }
+  }
+}
+
+// ============================================
+// نمایش صحنه
+// ============================================
+async function showScene(scene, index) {
+  if (!els.sceneStage) return;
+  
+  const transition = state.settings.transition;
+  const outClass = `${transition}-out`;
+  const inClass = `${transition}-in`;
+
+  if (els.sceneStage.firstChild) {
+    els.sceneStage.firstChild.classList.add(outClass);
+    await wait(600);
+    els.sceneStage.innerHTML = "";
+  }
+
+  const sceneEl = document.createElement("div");
+  sceneEl.className = "text-center max-w-[90%]";
+  sceneEl.style.opacity = "0";
+
+  if (state.settings.textPosition === "top") {
+    els.sceneStage.style.alignItems = "flex-start";
+    els.sceneStage.style.paddingTop = "20%";
+  } else if (state.settings.textPosition === "bottom") {
+    els.sceneStage.style.alignItems = "flex-end";
+    els.sceneStage.style.paddingBottom = "20%";
+  } else {
+    els.sceneStage.style.alignItems = "center";
+    els.sceneStage.style.padding = "";
+  }
+
+  if (scene.title) {
+    const titleEl = document.createElement("div");
+    titleEl.className = "text-lg uppercase tracking-widest mb-4 opacity-90";
+    titleEl.style.color = "var(--accent-400)";
+    titleEl.textContent = scene.title;
+    sceneEl.appendChild(titleEl);
+  }
+
+  const contentEl = document.createElement("div");
+  contentEl.className = "font-black leading-tight";
+  contentEl.style.fontSize = `${state.settings.fontSize}px`;
+  contentEl.style.color = state.settings.textColor;
+
+  if (state.settings.shake) contentEl.classList.add("shake-effect");
+  if (state.settings.glitch) contentEl.classList.add("glitch-effect");
+  if (state.settings.chromatic) {
+    contentEl.classList.add("chromatic-effect");
+    contentEl.setAttribute("data-text", scene.content);
+  }
+
+  if (state.settings.textShadow) {
+    contentEl.style.textShadow = "0 4px 20px rgba(0,0,0,0.8)";
+    if (state.settings.glow) {
+      contentEl.style.textShadow += ", 0 0 20px rgba(255,255,255,0.8), 0 0 40px var(--primary-500)";
+    }
+  }
+
+  sceneEl.appendChild(contentEl);
+  els.sceneStage.appendChild(sceneEl);
+
+  if (state.settings.kenburns && state.bgType === "image" && els.bgImage) {
+    els.bgImage.style.transition = "transform 15s ease-out";
+    els.bgImage.style.transform = index % 2 === 0 ? "scale(1.2)" : "scale(1)";
+  }
+
+  await wait(50);
+  sceneEl.classList.add(inClass);
+  sceneEl.style.opacity = "1";
+
+  if (state.settings.typewriter) {
+    await typewriter(contentEl, scene.content);
+  } else {
+    contentEl.textContent = scene.content;
+  }
+
+  const progress = ((index + 1) / state.scenes.length) * 100;
+  if (els.progressBar) els.progressBar.style.width = `${progress}%`;
+
+  const elapsed = (index + 1) * state.settings.duration;
+  const minutes = Math.floor(elapsed / 60);
+  const seconds = Math.floor(elapsed % 60);
+  if (els.timeDisplay) els.timeDisplay.textContent = `${pad(minutes)}:${pad(seconds)}`;
+}
+
+// ============================================
+// افکت تایپ‌نویس
+// ============================================
+async function typewriter(el, text) {
+  const speed = 50 / state.settings.speed;
+  for (let i = 0; i < text.length; i++) {
+    if (!state.isPlaying) break;
+    el.textContent += text[i];
+    await wait(speed);
+  }
+}
+
+// ============================================
+// تابع تاخیر
+// ============================================
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// ============================================
+// فرمت عدد
+// ============================================
+function pad(num) {
+  return num.toString().padStart(2, "0");
+}
+
+// ============================================
+// راه‌اندازی ذرات
+// ============================================
+function initParticles() {
+  if (!els.particlesCanvas) return;
+  const canvas = els.particlesCanvas;
+  const ctx = canvas.getContext("2d");
+
+  function resize() {
+    if (!els.viewport) return;
+    canvas.width = els.viewport.offsetWidth;
+    canvas.height = els.viewport.offsetHeight;
+  }
+
+  resize();
+  window.addEventListener("resize", resize);
+
+  const particles = [];
+  for (let i = 0; i < 50; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.5,
+      vy: (Math.random() - 0.5) * 0.5,
+      size: Math.random() * 2 + 1,
+    });
+  }
+
+  function animate() {
+    if (!state.settings.particles) {
+      requestAnimationFrame(animate);
       return;
     }
-    state.elapsedTime = (Date.now() - state.startTime) / 1000;
-    if (elements.timeDisplay)
-      elements.timeDisplay.textContent = formatTime(state.elapsedTime);
-  }, 100);
-
-  for (let i = fromIndex; i < state.scenes.length; i++) {
-    if (!state.playing) break;
-    state.current = i;
-    await showScene(i);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+    particles.forEach((p) => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+    });
+    requestAnimationFrame(animate);
   }
 
-  state.playing = false;
-  clearInterval(timerInterval);
-  setStatus("پایان پخش");
+  animate();
+}
 
-  if (elements.btnPlay) {
-    elements.btnPlay.innerHTML =
-      '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg><span>پخش</span>';
+// ============================================
+// Film Grain
+// ============================================
+function createFilmGrain() {
+  if (!els.filmGrain) return;
+  const grain = els.filmGrain;
+  grain.style.background = `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px)`;
+  grain.style.backgroundSize = "100% 4px";
+  grain.style.animation = "grain 0.2s steps(10) infinite";
+}
+
+// ============================================
+// ضبط ویدیو
+// ============================================
+async function toggleRecord() {
+  if (!state.recording) {
+    await startRecording();
+  } else {
+    stopRecording();
   }
 }
 
-function stopPlayback() {
-  state.playing = false;
-  clearTimeout(state.timer);
-  setStatus("متوقف");
-
-  if (elements.btnPlay) {
-    elements.btnPlay.innerHTML =
-      '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg><span>پخش</span>';
+async function startRecording() {
+  try {
+    const stream = await navigator.mediaDevices.getDisplayMedia({
+      video: { mediaSource: "screen" },
+    });
+    const mediaRecorder = new MediaRecorder(stream, {
+      mimeType: "video/webm;codecs=vp9",
+    });
+    const chunks = [];
+    mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) chunks.push(e.data);
+    };
+    mediaRecorder.onstop = () => {
+      const blob = new Blob(chunks, { type: "video/webm" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `scene-${Date.now()}.webm`;
+      a.click();
+      showStatus("ویدیو ذخیره شد", "success");
+    };
+    mediaRecorder.start();
+    state.recording = true;
+    state.mediaRecorder = mediaRecorder;
+    const btnRecord = document.getElementById("btnRecord");
+    if (btnRecord) {
+      btnRecord.innerHTML = '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12"/></svg><span>توقف ضبط</span>';
+    }
+    showStatus("در حال ضبط...", "recording");
+  } catch (err) {
+    console.error("خطا:", err);
+    showStatus("خطا در ضبط", "error");
   }
 }
 
-async function goTo(index) {
-  state.scenes = parseScenes(elements.inputText?.value || "");
-  if (!state.scenes.length) return;
-
-  index = clamp(index, 0, state.scenes.length - 1);
-  state.current = index;
-  await showScene(index);
-  setStatus(`صحنه ${state.current + 1} از ${state.scenes.length}`);
+function stopRecording() {
+  if (state.mediaRecorder) {
+    state.mediaRecorder.stop();
+    state.mediaRecorder.stream.getTracks().forEach((track) => track.stop());
+    state.recording = false;
+    const btnRecord = document.getElementById("btnRecord");
+    if (btnRecord) {
+      btnRecord.innerHTML = '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg><span>ضبط</span>';
+    }
+    showStatus("ضبط متوقف شد", "stopped");
+  }
 }
 
-function updateProgress() {
-  const total = state.scenes.length || 1;
-  const pct = Math.round(((state.current + 1) / total) * 100);
-  if (elements.progressBar) elements.progressBar.style.width = pct + "%";
-  if (elements.currentSceneEl)
-    elements.currentSceneEl.textContent = state.current + 1;
-  if (elements.totalScenesEl) elements.totalScenesEl.textContent = total;
+// ============================================
+// خروجی پروژه
+// ============================================
+function exportProject() {
+  if (!els.inputText) return;
+  const project = {
+    version: "4.5",
+    text: els.inputText.value,
+    settings: state.settings,
+    bgImage: state.bgImage,
+    bgVideo: state.bgVideo,
+    bgType: state.bgType,
+    timestamp: Date.now(),
+  };
+  const json = JSON.stringify(project, null, 2);
+  const blob = new Blob([json], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `project-${Date.now()}.json`;
+  a.click();
+  showStatus("پروژه صادر شد", "success");
 }
 
-// ===== تمام صفحه =====
+// ============================================
+// ورودی پروژه
+// ============================================
+function importProject(e) {
+  const file = e.target.files[0];
+  if (!file || !els.inputText) return;
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    try {
+      const project = JSON.parse(event.target.result);
+      els.inputText.value = project.text || "";
+      state.settings = { ...state.settings, ...project.settings };
+      if (project.bgImage) {
+        state.bgImage = project.bgImage;
+        state.bgType = "image";
+        if (els.bgImage) {
+          els.bgImage.src = project.bgImage;
+          els.bgImage.classList.remove("hidden");
+        }
+        if (els.bgPreviewImg) {
+          els.bgPreviewImg.src = project.bgImage;
+          els.bgPreviewImg.classList.remove("hidden");
+        }
+        if (els.bgPreview) els.bgPreview.classList.remove("hidden");
+        const btnRemove = document.getElementById("btnRemoveBg");
+        if (btnRemove) btnRemove.classList.remove("hidden");
+      }
+      if (project.bgVideo) {
+        state.bgVideo = project.bgVideo;
+        state.bgType = "video";
+        if (els.bgVideo) {
+          els.bgVideo.src = project.bgVideo;
+          els.bgVideo.classList.remove("hidden");
+        }
+        if (els.bgPreviewVideo) {
+          els.bgPreviewVideo.src = project.bgVideo;
+          els.bgPreviewVideo.classList.remove("hidden");
+        }
+        if (els.bgPreview) els.bgPreview.classList.remove("hidden");
+        const btnRemove = document.getElementById("btnRemoveBg");
+        if (btnRemove) btnRemove.classList.remove("hidden");
+      }
+      syncSettingsToUI();
+      parseScenes();
+      updateStats();
+      showStatus("پروژه بارگذاری شد", "success");
+    } catch (err) {
+      console.error("خطا:", err);
+      showStatus("خطا در بارگذاری", "error");
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ============================================
+// همگام‌سازی
+// ============================================
+function syncSettingsToUI() {
+  const speedRange = document.getElementById("speedRange");
+  const durationInput = document.getElementById("durationInput");
+  const transitionSelect = document.getElementById("transitionSelect");
+  const fontSizeRange = document.getElementById("fontSizeRange");
+  const bgOpacityRange = document.getElementById("bgOpacityRange");
+  const bgBlurRange = document.getElementById("bgBlurRange");
+  const volumeRange = document.getElementById("volumeRange");
+
+  if (speedRange) speedRange.value = state.settings.speed;
+  if (els.speedLabel) els.speedLabel.textContent = `${state.settings.speed}×`;
+  if (durationInput) durationInput.value = state.settings.duration;
+  if (els.durationValue) els.durationValue.textContent = state.settings.duration.toFixed(1);
+  if (transitionSelect) transitionSelect.value = state.settings.transition;
+  if (fontSizeRange) fontSizeRange.value = state.settings.fontSize;
+  if (els.fontSizeValue) els.fontSizeValue.textContent = state.settings.fontSize;
+  if (bgOpacityRange) bgOpacityRange.value = state.settings.bgOpacity;
+  if (els.bgOpacityValue) els.bgOpacityValue.textContent = state.settings.bgOpacity;
+  if (bgBlurRange) bgBlurRange.value = state.settings.bgBlur;
+  if (els.bgBlurValue) els.bgBlurValue.textContent = state.settings.bgBlur;
+  if (volumeRange) volumeRange.value = state.settings.volume;
+  if (els.volumeLabel) els.volumeLabel.textContent = `${state.settings.volume}%`;
+
+  const effects = [
+    "typeEffect", "kenburns", "particlesEffect", "vignetteEffect",
+    "glowEffect", "grainyEffect", "shakeEffect", "glitchEffect", "chromaticEffect"
+  ];
+  const keys = [
+    "typewriter", "kenburns", "particles", "vignette",
+    "glow", "grainy", "shake", "glitch", "chromatic"
+  ];
+
+  effects.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) el.checked = state.settings[keys[i]];
+  });
+}
+
+// ============================================
+// اشتراک‌گذاری
+// ============================================
+function shareProject() {
+  const url = window.location.href;
+  if (navigator.share) {
+    navigator.share({ 
+      title: "پخش‌کننده متن Pro", 
+      text: "ابزار تبدیل متن به ویدیو", 
+      url 
+    }).catch(err => console.log(err));
+  } else {
+    navigator.clipboard.writeText(url);
+    showStatus("لینک کپی شد", "success");
+  }
+}
+
+// ============================================
+// تمام صفحه
+// ============================================
 function toggleFullscreen() {
-  if (!elements.viewport) return;
-
+  if (!els.viewport) return;
   if (!document.fullscreenElement) {
-    elements.viewport
-      .requestFullscreen()
-      .then(() => {
-        elements.viewport.classList.add("fullscreen");
-        setStatus("تمام صفحه");
-      })
-      .catch(() => setStatus("خطا"));
+    els.viewport.requestFullscreen().catch(err => console.error(err));
   } else {
     document.exitFullscreen();
   }
 }
 
-if (elements.btnFullscreen) {
-  elements.btnFullscreen.addEventListener("click", toggleFullscreen);
-}
-
-document.addEventListener("fullscreenchange", () => {
-  if (!document.fullscreenElement) {
-    elements.viewport?.classList.remove("fullscreen");
+// ============================================
+// مودال AI
+// ============================================
+function openAiModal() {
+  const modal = document.getElementById("aiModal");
+  if (modal) {
+    modal.classList.remove("hidden");
+    const promptInput = document.getElementById("aiPrompt");
+    if (promptInput) promptInput.focus();
   }
-});
+}
 
-// ===== میانبرها =====
-window.addEventListener("keydown", (e) => {
-  if (e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT") return;
-
-  if (e.code === "Space") {
-    e.preventDefault();
-    if (state.playing) stopPlayback();
-    else playAll(state.current);
-  } else if (e.key === "ArrowRight") {
-    e.preventDefault();
-    if (state.playing) clearTimeout(state.timer);
-    goTo(state.current + 1);
-  } else if (e.key === "ArrowLeft") {
-    e.preventDefault();
-    goTo(state.current - 1);
-  } else if (e.key === "f" || e.key === "F") {
-    e.preventDefault();
-    toggleFullscreen();
+function closeAiModal_func() {
+  const modal = document.getElementById("aiModal");
+  if (modal) {
+    modal.classList.add("hidden");
+    const promptInput = document.getElementById("aiPrompt");
+    if (promptInput) promptInput.value = "";
   }
-});
-
-// ===== پس‌زمینه =====
-if (elements.bgImageFile) {
-  elements.bgImageFile.addEventListener("change", (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      state.bgImageSrc = event.target.result;
-      if (elements.bgImage) {
-        elements.bgImage.src = state.bgImageSrc;
-        elements.bgImage.classList.remove("hidden");
-      }
-      if (elements.bgPreviewImg) elements.bgPreviewImg.src = state.bgImageSrc;
-      elements.bgPreview?.classList.remove("hidden");
-      elements.btnRemoveBg?.classList.remove("hidden");
-      applyBgSettings();
-      setStatus("پس‌زمینه بارگذاری شد");
-    };
-    reader.readAsDataURL(file);
-  });
 }
 
-function applyBgSettings() {
-  if (!elements.bgImage) return;
-  const opacity = (elements.bgOpacityRange?.value || 50) / 100;
-  const blur = elements.bgBlurRange?.value || 10;
-  elements.bgImage.style.opacity = opacity;
-  elements.bgImage.style.filter = `blur(${blur}px)`;
-}
-
-if (elements.bgOpacityRange) {
-  elements.bgOpacityRange.addEventListener("input", () => {
-    if (elements.bgOpacityValue)
-      elements.bgOpacityValue.textContent = elements.bgOpacityRange.value;
-    applyBgSettings();
-  });
-}
-
-if (elements.bgBlurRange) {
-  elements.bgBlurRange.addEventListener("input", () => {
-    if (elements.bgBlurValue)
-      elements.bgBlurValue.textContent = elements.bgBlurRange.value;
-    applyBgSettings();
-  });
-}
-
-if (elements.btnRemoveBg) {
-  elements.btnRemoveBg.addEventListener("click", () => {
-    state.bgImageSrc = null;
-    if (elements.bgImage) {
-      elements.bgImage.src = "";
-      elements.bgImage.classList.add("hidden");
-    }
-    elements.bgPreview?.classList.add("hidden");
-    elements.btnRemoveBg?.classList.add("hidden");
-    if (elements.bgImageFile) elements.bgImageFile.value = "";
-    setStatus("پس‌زمینه حذف شد");
-  });
-}
-
-// ===== صدا =====
-if (elements.audioFile) {
-  elements.audioFile.addEventListener("change", (e) => {
-    const f = e.target.files[0];
-    if (!f) return;
-
-    state.audio.src = URL.createObjectURL(f);
-    state.audio.load();
-    state.audio.volume = (elements.volumeRange?.value || 100) / 100;
-
-    state.audio.play().then(() => {
-      state.audio.pause();
-      state.audio.currentTime = 0;
-      setStatus("موسیقی بارگذاری شد");
-    });
-  });
-}
-
-if (elements.audioToggle) {
-  elements.audioToggle.addEventListener("click", () => {
-    if (!state.audio.src) {
-      setStatus("ابتدا موسیقی انتخاب کنید");
-      return;
-    }
-
-    if (state.audio.paused) {
-      state.audio.play();
-      setStatus("موسیقی پخش شد");
-    } else {
-      state.audio.pause();
-      setStatus("موسیقی متوقف شد");
-    }
-  });
-}
-
-if (elements.volumeRange) {
-  elements.volumeRange.addEventListener("input", () => {
-    if (elements.volumeLabel)
-      elements.volumeLabel.textContent = elements.volumeRange.value + "%";
-    state.audio.volume = elements.volumeRange.value / 100;
-  });
-}
-
-// ===== ضبط =====
-if (elements.btnRecord) {
-  elements.btnRecord.addEventListener("click", async () => {
-    if (state.mediaRecorder && state.mediaRecorder.state === "recording") {
-      state.mediaRecorder.stop();
-      setStatus("در حال پایان...");
-      return;
-    }
-
-    state.scenes = parseScenes(elements.inputText?.value || "");
-    if (!state.scenes.length) {
-      setStatus("متنی وجود ندارد");
-      return;
-    }
-
-    if (state.audio.src && state.audio.paused) {
-      state.audio.currentTime = 0;
-      state.audio.play();
-    }
-
-    const stream = elements.viewport.captureStream(30);
-
-    try {
-      const audioCtx = new AudioContext();
-      const dest = audioCtx.createMediaStreamDestination();
-      const source = audioCtx.createMediaElementSource(state.audio);
-      source.connect(dest);
-      source.connect(audioCtx.destination);
-      dest.stream.getAudioTracks().forEach((t) => stream.addTrack(t));
-    } catch (err) {
-      console.warn("Audio error:", err);
-    }
-
-    state.recordedChunks = [];
-    state.mediaRecorder = new MediaRecorder(stream, { mimeType: "video/webm" });
-
-    state.mediaRecorder.ondataavailable = (e) => {
-      if (e.data && e.data.size > 0) state.recordedChunks.push(e.data);
-    };
-
-    state.mediaRecorder.onstop = () => {
-      const blob = new Blob(state.recordedChunks, { type: "video/webm" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `video_${Date.now()}.webm`;
-      a.click();
-      URL.revokeObjectURL(url);
-
-      setStatus("ضبط تکمیل شد");
-
-      if (!state.audio.paused) {
-        state.audio.pause();
-        state.audio.currentTime = 0;
-      }
-    };
-
-    state.mediaRecorder.start();
-    setStatus("در حال ضبط...");
-
-    await playAll(0);
-
-    if (state.mediaRecorder && state.mediaRecorder.state === "recording") {
-      state.mediaRecorder.stop();
-    }
-  });
-}
-
-// ===== Export/Import =====
-if (elements.btnExport) {
-  elements.btnExport.addEventListener("click", () => {
-    const settings = {
-      text: elements.inputText?.value || "",
-      speed: elements.speedRange?.value || 1,
-      duration: elements.durationInput?.value || 3,
-      fontSize: elements.fontSizeRange?.value || 48,
-      transition: elements.transitionSelect?.value || "fade",
-      effects: {
-        type: elements.typeEffect?.checked || false,
-        kenburns: elements.kenburns?.checked || false,
-        particles: elements.particlesEffect?.checked || false,
-        vignette: elements.vignetteEffect?.checked || false,
-        glow: elements.glowEffect?.checked || false,
-        grainy: elements.grainyEffect?.checked || false,
+// ============================================
+// تولید با AI
+// ============================================
+async function generateWithAi() {
+  const promptInput = document.getElementById("aiPrompt");
+  if (!promptInput || !els.inputText) return;
+  const prompt = promptInput.value.trim();
+  if (!prompt) {
+    showStatus("لطفاً درخواست خود را وارد کنید", "error");
+    return;
+  }
+  showStatus("در حال تولید...", "processing");
+  closeAiModal_func();
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json", 
+        "anthropic-version": "2023-06-01",
+        "x-api-key": "YOUR_API_KEY_HERE"
       },
-      background: {
-        opacity: elements.bgOpacityRange?.value || 50,
-        blur: elements.bgBlurRange?.value || 10,
-        image: state.bgImageSrc,
-      },
-      audio: { volume: elements.volumeRange?.value || 100 },
-    };
-
-    const blob = new Blob([JSON.stringify(settings, null, 2)], {
-      type: "application/json",
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        messages: [{ 
+          role: "user", 
+          content: `به فارسی در قالب صحنه‌های سینمایی پاسخ بده. هر صحنه با "صحنه اول:"، "صحنه دوم:" شروع شود.\n\nدرخواست: ${prompt}\n\nفقط متن صحنه‌ها.` 
+        }],
+      }),
     });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `settings_${Date.now()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-
-    setStatus("تنظیمات ذخیره شد");
-  });
+    if (!response.ok) throw new Error(`خطا: ${response.status}`);
+    const data = await response.json();
+    if (data.content && Array.isArray(data.content)) {
+      const text = data.content.map(item => item.type === "text" ? item.text : "").join("\n").trim();
+      if (text) {
+        els.inputText.value = text;
+        parseScenes();
+        updateStats();
+        showStatus("تولید شد", "success");
+      } else throw new Error("پاسخ خالی");
+    } else throw new Error("فرمت نامعتبر");
+  } catch (err) {
+    console.error(err);
+    showStatus("خطا: برای استفاده از AI باید API Key خود را در کد قرار دهید", "error");
+  }
 }
 
-if (elements.btnImport) {
-  elements.btnImport.addEventListener("click", () => {
-    elements.importFile?.click();
-  });
+// ============================================
+// بهینه‌سازی
+// ============================================
+async function optimizeWithAi() {
+  if (!els.inputText) return;
+  const text = els.inputText.value.trim();
+  if (!text) {
+    showStatus("متن خالی است", "error");
+    return;
+  }
+  showStatus("در حال بهینه‌سازی...", "processing");
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json", 
+        "anthropic-version": "2023-06-01",
+        "x-api-key": "YOUR_API_KEY_HERE"
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        messages: [{ 
+          role: "user", 
+          content: `این متن را برای نمایش سینمایی بهینه کن:\n\n${text}\n\nفقط متن بهینه‌شده.` 
+        }],
+      }),
+    });
+    if (!response.ok) throw new Error(`خطا: ${response.status}`);
+    const data = await response.json();
+    if (data.content && Array.isArray(data.content)) {
+      const optimized = data.content.map(item => item.type === "text" ? item.text : "").join("\n").trim();
+      if (optimized) {
+        els.inputText.value = optimized;
+        parseScenes();
+        updateStats();
+        showStatus("بهینه شد", "success");
+      } else throw new Error("پاسخ خالی");
+    } else throw new Error("فرمت نامعتبر");
+  } catch (err) {
+    console.error(err);
+    showStatus("خطا: برای استفاده از AI باید API Key خود را در کد قرار دهید", "error");
+  }
 }
 
-if (elements.importFile) {
-  elements.importFile.addEventListener("change", (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+// ============================================
+// راهنما
+// ============================================
+function showHelp() {
+  alert(`🎬 راهنما
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const s = JSON.parse(event.target.result);
+📝 صحنه:
+"صحنه اول:", "صحنه دوم:"
 
-        if (elements.inputText && s.text) elements.inputText.value = s.text;
-        if (elements.speedRange && s.speed) elements.speedRange.value = s.speed;
-        if (elements.durationInput && s.duration)
-          elements.durationInput.value = s.duration;
-        if (elements.fontSizeRange && s.fontSize)
-          elements.fontSizeRange.value = s.fontSize;
-        if (elements.transitionSelect && s.transition)
-          elements.transitionSelect.value = s.transition;
+⚡ افکت‌ها:
+تایپ، Ken Burns، Shake، Glitch
 
-        if (s.effects) {
-          if (elements.typeEffect) elements.typeEffect.checked = s.effects.type;
-          if (elements.kenburns) elements.kenburns.checked = s.effects.kenburns;
-          if (elements.particlesEffect)
-            elements.particlesEffect.checked = s.effects.particles;
-          if (elements.vignetteEffect)
-            elements.vignetteEffect.checked = s.effects.vignette;
-          if (elements.glowEffect) elements.glowEffect.checked = s.effects.glow;
-          if (elements.grainyEffect)
-            elements.grainyEffect.checked = s.effects.grainy;
-        }
+⌨️ میانبرها:
+Space: پخش
+←/→: صحنه
+F: تمام صفحه`);
+}
 
-        if (s.background) {
-          if (elements.bgOpacityRange)
-            elements.bgOpacityRange.value = s.background.opacity;
-          if (elements.bgBlurRange)
-            elements.bgBlurRange.value = s.background.blur;
-          if (s.background.image) {
-            state.bgImageSrc = s.background.image;
-            if (elements.bgImage) {
-              elements.bgImage.src = state.bgImageSrc;
-              elements.bgImage.classList.remove("hidden");
-            }
-            if (elements.bgPreviewImg)
-              elements.bgPreviewImg.src = state.bgImageSrc;
-            elements.bgPreview?.classList.remove("hidden");
-            elements.btnRemoveBg?.classList.remove("hidden");
-          }
-        }
+// ============================================
+// تنظیمات
+// ============================================
+function showSettings() {
+  const modal = document.getElementById("settingsModal");
+  if (modal) modal.classList.remove("hidden");
+}
 
-        if (s.audio && elements.volumeRange)
-          elements.volumeRange.value = s.audio.volume;
+function closeSettingsModal_func() {
+  const modal = document.getElementById("settingsModal");
+  if (modal) modal.classList.add("hidden");
+}
 
-        if (elements.speedLabel)
-          elements.speedLabel.textContent =
-            (elements.speedRange?.value || 1) + "×";
-        if (elements.durationValue)
-          elements.durationValue.textContent = parseFloat(
-            elements.durationInput?.value || 3
-          ).toFixed(1);
-        if (elements.fontSizeValue)
-          elements.fontSizeValue.textContent =
-            elements.fontSizeRange?.value || 48;
-        if (elements.volumeLabel)
-          elements.volumeLabel.textContent =
-            (elements.volumeRange?.value || 100) + "%";
-        if (elements.bgOpacityValue)
-          elements.bgOpacityValue.textContent =
-            elements.bgOpacityRange?.value || 50;
-        if (elements.bgBlurValue)
-          elements.bgBlurValue.textContent = elements.bgBlurRange?.value || 10;
-
-        updateSceneCount();
-        applyBgSettings();
-
-        setStatus("تنظیمات بارگذاری شد");
-      } catch (err) {
-        setStatus("خطا در بارگذاری");
+// ============================================
+// وضعیت
+// ============================================
+function showStatus(message, type = "info") {
+  if (els.statusText) els.statusText.textContent = message;
+  const badge = document.getElementById("statusBadge");
+  if (!badge) return;
+  const dot = badge.querySelector(".status-dot");
+  if (!dot) return;
+  dot.className = "w-2 h-2 rounded-full";
+  const colors = {
+    success: "bg-emerald-500 animate-pulse",
+    error: "bg-red-500 animate-pulse",
+    playing: "bg-blue-500 animate-pulse",
+    recording: "bg-red-500 animate-ping",
+    processing: "bg-yellow-500 animate-pulse",
+    stopped: "bg-gray-500 animate-pulse",
+    paused: "bg-gray-500 animate-pulse",
+  };
+  dot.className += " " + (colors[type] || colors.success);
+  if (!["playing", "recording"].includes(type)) {
+    setTimeout(() => {
+      if (els.statusText && els.statusText.textContent === message) {
+        els.statusText.textContent = "آماده";
+        dot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
       }
-    };
-    reader.readAsText(file);
-    elements.importFile.value = "";
-  });
+    }, 3000);
+  }
 }
 
-// ===== قالب‌ها =====
-const templates = {
-  movie: `صحنه اول: شب بارانی
-تصویر: چراغ‌ها در آب بازتاب می‌یابند
+// ============================================
+// شمارنده
+// ============================================
+function startOnlineCounter() {
+  const updateOnline = () => {
+    const count = 150 + Math.floor(Math.random() * 150);
+    if (els.onlineUsers) els.onlineUsers.textContent = count.toLocaleString("fa-IR");
+  };
+  const updateProjects = () => {
+    const count = 45 + Math.floor(Math.random() * 20);
+    if (els.todayProjects) els.todayProjects.textContent = count.toLocaleString("fa-IR");
+  };
+  updateOnline();
+  updateProjects();
+  setInterval(updateOnline, 10000);
+  setInterval(updateProjects, 15000);
+}
+
+// ============================================
+// متن نمونه
+// ============================================
+function loadSampleText() {
+  if (!els.inputText) return;
+  els.inputText.value = `صحنه اول: شروع سفر
+تصویر: جاده‌ای بی‌پایان به سوی افق
 
 صحنه دوم: آرامش
-قدم‌های آرام به سمت خانه
+صدای باران و قدم‌های آرام
 
-پایان: دری بسته می‌شود
-و سکوت برقرار است`,
+صحنه سوم: امید
+طلوع خورشید پشت کوه‌ها
 
-  poem: `بیت اول: دل من
-چون دریای بی‌کران
+صحنه چهارم: پایان
+و سفر ادامه دارد...`;
+  parseScenes();
+  updateStats();
+}
 
-بیت دوم: موج عشق
-در آن آرام نیست
+// ============================================
+// استایل
+// ============================================
+function loadStyles() {
+  const style = document.createElement("style");
+  style.textContent = `
+    @keyframes grain {
+      0%, 100% { transform: translate(0, 0); }
+      10% { transform: translate(-5%, -10%); }
+      20% { transform: translate(-15%, 5%); }
+      30% { transform: translate(7%, -25%); }
+      40% { transform: translate(-5%, 25%); }
+      50% { transform: translate(-15%, 10%); }
+      60% { transform: translate(15%, 0%); }
+      70% { transform: translate(0%, 15%); }
+      80% { transform: translate(3%, 35%); }
+      90% { transform: translate(-10%, 10%); }
+    }
+  `;
+  document.head.appendChild(style);
+}
 
-بیت سوم: اما امید
-همچنان می‌درخشد`,
-
-  quote: `حکمت: زندگی
-هنر است نه تصادف
-
-اندیشه: هر لحظه
-فرصتی برای شروع
-
-پایان: پس بیا
-و زندگی کن`,
-
-  story: `آغاز: روزگاری
-در شهری دور
-
-میانه: کسی بود
-با رویای بزرگ
-
-پایان: و آن رویا
-به حقیقت پیوست`,
+console.log("🎬 پخش‌کننده فیلم‌وار متن Pro v4.5");
+console.log("✅ برنامه آماده است!");
+console.log("📝 توجه: برای استفاده از AI باید API Key خود را در کد قرار دهید");// ============================================
+// مدیریت وضعیت برنامه
+// ============================================
+const state = {
+  scenes: [],
+  currentScene: 0,
+  isPlaying: false,
+  isPaused: false,
+  settings: {
+    speed: 1,
+    duration: 5,
+    transition: "fade",
+    fontSize: 48,
+    typewriter: true,
+    kenburns: true,
+    particles: false,
+    vignette: true,
+    glow: true,
+    grainy: false,
+    shake: false,
+    glitch: false,
+    chromatic: false,
+    bgOpacity: 50,
+    bgBlur: 10,
+    volume: 100,
+    videoQuality: "1080p",
+    aspectRatio: "16:9",
+    brightness: 100,
+    contrast: 100,
+    saturation: 100,
+    textPosition: "center",
+    textColor: "#ffffff",
+    textShadow: true,
+  },
+  bgImage: null,
+  bgVideo: null,
+  bgType: null,
+  audio: null,
+  recording: false,
+  mediaRecorder: null,
 };
 
-$(".template-btn").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const t = btn.dataset.template;
-    if (templates[t] && elements.inputText) {
-      elements.inputText.value = templates[t];
-      updateSceneCount();
-      setStatus(`قالب ${t} بارگذاری شد`);
-    }
-  });
-});
+// ============================================
+// عناصر DOM
+// ============================================
+const els = {
+  inputText: document.getElementById("inputText"),
+  viewport: document.getElementById("viewport"),
+  sceneStage: document.getElementById("sceneStage"),
+  currentScene: document.getElementById("currentScene"),
+  totalScenes: document.getElementById("totalScenes"),
+  timeDisplay: document.getElementById("timeDisplay"),
+  progressBar: document.getElementById("progressBar"),
+  sceneCount: document.getElementById("sceneCount"),
+  wordCount: document.getElementById("wordCount"),
+  charCount: document.getElementById("charCount"),
+  onlineUsers: document.getElementById("onlineUsers"),
+  todayProjects: document.getElementById("todayProjects"),
+  statusText: document.getElementById("statusText"),
+  speedLabel: document.getElementById("speedLabel"),
+  durationValue: document.getElementById("durationValue"),
+  fontSizeValue: document.getElementById("fontSizeValue"),
+  bgOpacityValue: document.getElementById("bgOpacityValue"),
+  bgBlurValue: document.getElementById("bgBlurValue"),
+  volumeLabel: document.getElementById("volumeLabel"),
+  bgImage: document.getElementById("bgImage"),
+  bgVideo: document.getElementById("bgVideo"),
+  bgPreview: document.getElementById("bgPreview"),
+  bgPreviewImg: document.getElementById("bgPreviewImg"),
+  bgPreviewVideo: document.getElementById("bgPreviewVideo"),
+  particlesCanvas: document.getElementById("particlesCanvas"),
+  vignette: document.getElementById("vignette"),
+  filmGrain: document.getElementById("filmGrain"),
+  audioPlayer: document.getElementById("audioPlayer"),
+  audioProgress: document.getElementById("audioProgress"),
+  audioCurrentTime: document.getElementById("audioCurrentTime"),
+  audioTimeStart: document.getElementById("audioTimeStart"),
+  audioTimeEnd: document.getElementById("audioTimeEnd"),
+  audioPlayIcon: document.getElementById("audioPlayIcon"),
+  audioPauseIcon: document.getElementById("audioPauseIcon"),
+  audioToggleText: document.getElementById("audioToggleText"),
+};
 
-// ===== تب‌ها =====
-$(".tab-btn").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const tab = btn.dataset.tab;
+// ============================================
+// شروع برنامه
+// ============================================
+document.addEventListener("DOMContentLoaded", init);
 
-    $(".tab-btn").forEach((b) => b.classList.remove("active"));
-    $(".tab-content").forEach((c) => c.classList.remove("active"));
-
-    btn.classList.add("active");
-    const content = document.querySelector(`[data-content="${tab}"]`);
-    if (content) content.classList.add("active");
-  });
-});
-
-// ===== دکمه‌ها =====
-if (elements.btnPlay) {
-  elements.btnPlay.addEventListener("click", () => {
-    if (!state.playing) playAll(state.current);
-    else stopPlayback();
-  });
-}
-
-if (elements.btnStop) elements.btnStop.addEventListener("click", stopPlayback);
-if (elements.btnPrev)
-  elements.btnPrev.addEventListener("click", () => goTo(state.current - 1));
-if (elements.btnNext)
-  elements.btnNext.addEventListener("click", () => goTo(state.current + 1));
-
-if (elements.viewportPlay) {
-  elements.viewportPlay.addEventListener("click", () => {
-    if (!state.playing) playAll(state.current);
-    else stopPlayback();
-  });
-}
-
-if (elements.viewportPrev)
-  elements.viewportPrev.addEventListener("click", () =>
-    goTo(state.current - 1)
-  );
-if (elements.viewportNext)
-  elements.viewportNext.addEventListener("click", () =>
-    goTo(state.current + 1)
-  );
-
-if (elements.speedRange) {
-  elements.speedRange.addEventListener("input", () => {
-    if (elements.speedLabel)
-      elements.speedLabel.textContent = elements.speedRange.value + "×";
-  });
-}
-
-if (elements.durationInput) {
-  elements.durationInput.addEventListener("input", () => {
-    const val = parseFloat(elements.durationInput.value);
-    if (elements.durationValue)
-      elements.durationValue.textContent = val.toFixed(1);
-  });
-}
-
-if (elements.fontSizeRange) {
-  elements.fontSizeRange.addEventListener("input", () => {
-    if (elements.fontSizeValue)
-      elements.fontSizeValue.textContent = elements.fontSizeRange.value;
-  });
-}
-
-// ===== AI Modal =====
-if (elements.aiAssistant) {
-  elements.aiAssistant.addEventListener("click", () => {
-    elements.aiModal?.classList.remove("hidden");
-  });
-}
-
-if (elements.closeAiModal) {
-  elements.closeAiModal.addEventListener("click", () => {
-    elements.aiModal?.classList.add("hidden");
-  });
-}
-
-if (elements.aiCancelBtn) {
-  elements.aiCancelBtn.addEventListener("click", () => {
-    elements.aiModal?.classList.add("hidden");
-  });
-}
-
-if (elements.aiGenerateBtn) {
-  elements.aiGenerateBtn.addEventListener("click", () => {
-    const prompt = elements.aiPrompt?.value;
-    if (!prompt) {
-      setStatus("لطفاً توضیحات را وارد کنید");
-      return;
-    }
-
-    setStatus("در حال تولید...");
-
-    setTimeout(() => {
-      const aiGenerated = `صحنه AI: ${prompt}
-تصویر: تولید شده با هوش مصنوعی
-پایان: صحنه پایان می‌یابد`;
-
-      if (elements.inputText) {
-        elements.inputText.value +=
-          (elements.inputText.value ? "\n\n" : "") + aiGenerated;
-        updateSceneCount();
-      }
-
-      elements.aiModal?.classList.add("hidden");
-      setStatus("محتوای AI تولید شد");
-    }, 1500);
-  });
-}
-
-if (elements.btnAiGenerate) {
-  elements.btnAiGenerate.addEventListener("click", () => {
-    elements.aiModal?.classList.remove("hidden");
-  });
-}
-
-if (elements.btnAiOptimize) {
-  elements.btnAiOptimize.addEventListener("click", () => {
-    state.scenes = parseScenes(elements.inputText?.value || "");
-    if (!state.scenes.length) {
-      setStatus("متنی وجود ندارد");
-      return;
-    }
-
-    setStatus("در حال بهینه‌سازی...");
-
-    setTimeout(() => {
-      if (elements.inputText) {
-        elements.inputText.value = elements.inputText.value
-          .replace(/\n{3,}/g, "\n\n")
-          .trim();
-        updateSceneCount();
-      }
-      setStatus("متن بهینه شد");
-    }, 1000);
-  });
-}
-
-// ===== آمار =====
-function updateStats() {
-  if (elements.visitors) {
-    elements.visitors.textContent = Math.floor(Math.random() * 500 + 1000);
-  }
-  if (elements.projectCount) {
-    elements.projectCount.textContent = Math.floor(Math.random() * 50 + 50);
-  }
-}
-
-// ===== مقداردهی اولیه =====
 function init() {
-  initTheme();
-
-  if (elements.inputText && !elements.inputText.value.trim()) {
-    elements.inputText.value = templates.movie;
-  }
-
-  updateSceneCount();
-  state.scenes = parseScenes(elements.inputText?.value || "");
-
-  if (state.scenes.length && elements.sceneStage) {
-    showScene(0);
-    setStatus("آماده");
-  }
-
-  if (elements.vignetteEffect?.checked) {
-    elements.vignette?.classList.add("active");
-  }
-
-  state.elapsedTime = 0;
-  if (elements.timeDisplay) elements.timeDisplay.textContent = "00:00";
-
+  console.log("🎬 شروع برنامه...");
+  setupTheme();
+  setupTabs();
+  setupEventListeners();
+  setupKeyboardShortcuts();
+  loadStyles();
+  parseScenes();
   updateStats();
-  setInterval(updateStats, 5000);
-
-  console.log(
-    "%c🎬 Cinematic Text Player Pro v4.0",
-    "color: #ef4444; font-size: 18px; font-weight: bold;"
-  );
-  console.log("%c✨ سیستم آماده است!", "color: #06b6d4; font-size: 14px;");
+  initParticles();
+  createFilmGrain();
+  startOnlineCounter();
+  loadSampleText();
+  
+  // فعال کردن افکت Vignette
+  if (state.settings.vignette && els.vignette) {
+    els.vignette.style.opacity = "1";
+    els.vignette.style.background = "radial-gradient(circle, transparent 50%, rgba(0,0,0,0.7) 100%)";
+  }
+  
+  console.log("✅ برنامه آماده است!");
 }
 
-// شروع
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", init);
-} else {
-  init();
+// ============================================
+// مدیریت تم
+// ============================================
+function setupTheme() {
+  const themeToggle = document.getElementById("themeToggle");
+  if (!themeToggle) return;
+  
+  const savedTheme = localStorage.getItem("theme") || "dark";
+  if (savedTheme === "dark") {
+    document.body.classList.add("dark");
+  }
+
+  themeToggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    const isDark = document.body.classList.contains("dark");
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+    showStatus(isDark ? "تم تاریک فعال شد" : "تم روشن فعال شد", "success");
+  });
 }
+
+// ============================================
+// مدیریت تب‌ها
+// ============================================
+function setupTabs() {
+  const tabBtns = document.querySelectorAll(".tab-btn");
+  const tabContents = document.querySelectorAll(".tab-content");
+
+  tabBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const tab = btn.dataset.tab;
+      tabBtns.forEach((b) => b.classList.remove("active"));
+      tabContents.forEach((c) => c.classList.remove("active"));
+      btn.classList.add("active");
+      const content = document.querySelector(`[data-content="${tab}"]`);
+      if (content) content.classList.add("active");
+    });
+  });
+}
+
+// ============================================
+// راه‌اندازی رویدادها
+// ============================================
+function setupEventListeners() {
+  const btnPlay = document.getElementById("btnPlay");
+  const btnPause = document.getElementById("btnPause");
+  const btnStop = document.getElementById("btnStop");
+  const btnPrev = document.getElementById("btnPrev");
+  const btnNext = document.getElementById("btnNext");
+  const btnRecord = document.getElementById("btnRecord");
+
+  if (btnPlay) btnPlay.addEventListener("click", play);
+  if (btnPause) btnPause.addEventListener("click", pause);
+  if (btnStop) btnStop.addEventListener("click", stop);
+  if (btnPrev) btnPrev.addEventListener("click", prevScene);
+  if (btnNext) btnNext.addEventListener("click", nextScene);
+  if (btnRecord) btnRecord.addEventListener("click", toggleRecord);
+
+  const viewportPlay = document.getElementById("viewportPlay");
+  const viewportPrev = document.getElementById("viewportPrev");
+  const viewportNext = document.getElementById("viewportNext");
+  
+  if (viewportPlay) viewportPlay.addEventListener("click", play);
+  if (viewportPrev) viewportPrev.addEventListener("click", prevScene);
+  if (viewportNext) viewportNext.addEventListener("click", nextScene);
+
+  if (els.inputText) {
+    els.inputText.addEventListener("input", () => {
+      parseScenes();
+      updateStats();
+    });
+  }
+
+  setupEffectControls();
+  setupMediaControls();
+  setupTemplates();
+  setupHeaderButtons();
+  setupAIControls();
+  setupAdvancedSettings();
+}
+
+// ============================================
+// راه‌اندازی کنترل‌های افکت
+// ============================================
+function setupEffectControls() {
+  const speedRange = document.getElementById("speedRange");
+  const durationInput = document.getElementById("durationInput");
+  const transitionSelect = document.getElementById("transitionSelect");
+  const fontSizeRange = document.getElementById("fontSizeRange");
+  
+  if (speedRange) {
+    speedRange.addEventListener("input", (e) => {
+      state.settings.speed = parseFloat(e.target.value);
+      if (els.speedLabel) els.speedLabel.textContent = `${state.settings.speed}×`;
+    });
+  }
+
+  if (durationInput) {
+    durationInput.addEventListener("input", (e) => {
+      state.settings.duration = parseFloat(e.target.value);
+      if (els.durationValue) els.durationValue.textContent = state.settings.duration.toFixed(1);
+    });
+  }
+
+  if (transitionSelect) {
+    transitionSelect.addEventListener("change", (e) => {
+      state.settings.transition = e.target.value;
+    });
+  }
+
+  if (fontSizeRange) {
+    fontSizeRange.addEventListener("input", (e) => {
+      state.settings.fontSize = parseInt(e.target.value);
+      if (els.fontSizeValue) els.fontSizeValue.textContent = state.settings.fontSize;
+    });
+  }
+
+  const effects = [
+    { id: "typeEffect", key: "typewriter" },
+    { id: "kenburns", key: "kenburns" },
+    { id: "particlesEffect", key: "particles" },
+    { id: "vignetteEffect", key: "vignette" },
+    { id: "glowEffect", key: "glow" },
+    { id: "grainyEffect", key: "grainy" },
+    { id: "shakeEffect", key: "shake" },
+    { id: "glitchEffect", key: "glitch" },
+    { id: "chromaticEffect", key: "chromatic" },
+  ];
+
+  effects.forEach(({ id, key }) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener("change", (e) => {
+        state.settings[key] = e.target.checked;
+        
+        if (key === "particles" && els.particlesCanvas) {
+          els.particlesCanvas.style.opacity = e.target.checked ? "1" : "0";
+        }
+        if (key === "vignette" && els.vignette) {
+          els.vignette.style.opacity = e.target.checked ? "1" : "0";
+        }
+        if (key === "grainy" && els.filmGrain) {
+          els.filmGrain.style.opacity = e.target.checked ? "0.15" : "0";
+        }
+      });
+    }
+  });
+}
+
+// ============================================
+// راه‌اندازی کنترل‌های مدیا
+// ============================================
+function setupMediaControls() {
+  const btnSelectImage = document.getElementById("btnSelectImage");
+  const btnSelectVideo = document.getElementById("btnSelectVideo");
+  const bgImageFile = document.getElementById("bgImageFile");
+  const bgVideoFile = document.getElementById("bgVideoFile");
+  const btnRemoveBg = document.getElementById("btnRemoveBg");
+
+  if (btnSelectImage) {
+    btnSelectImage.addEventListener("click", () => {
+      if (bgImageFile) bgImageFile.click();
+    });
+  }
+
+  if (btnSelectVideo) {
+    btnSelectVideo.addEventListener("click", () => {
+      if (bgVideoFile) bgVideoFile.click();
+    });
+  }
+
+  if (bgImageFile) bgImageFile.addEventListener("change", handleBgImage);
+  if (bgVideoFile) bgVideoFile.addEventListener("change", handleBgVideo);
+  if (btnRemoveBg) btnRemoveBg.addEventListener("click", removeBgMedia);
+
+  const bgOpacityRange = document.getElementById("bgOpacityRange");
+  const bgBlurRange = document.getElementById("bgBlurRange");
+
+  if (bgOpacityRange) {
+    bgOpacityRange.addEventListener("input", (e) => {
+      state.settings.bgOpacity = parseInt(e.target.value);
+      if (els.bgOpacityValue) els.bgOpacityValue.textContent = state.settings.bgOpacity;
+      updateBackgroundStyle();
+    });
+  }
+
+  if (bgBlurRange) {
+    bgBlurRange.addEventListener("input", (e) => {
+      state.settings.bgBlur = parseInt(e.target.value);
+      if (els.bgBlurValue) els.bgBlurValue.textContent = state.settings.bgBlur;
+      updateBackgroundStyle();
+    });
+  }
+
+  const audioFile = document.getElementById("audioFile");
+  const audioToggle = document.getElementById("audioToggle");
+  const volumeRange = document.getElementById("volumeRange");
+
+  if (audioFile) audioFile.addEventListener("change", handleAudio);
+  if (audioToggle) audioToggle.addEventListener("click", toggleAudio);
+
+  if (volumeRange) {
+    volumeRange.addEventListener("input", (e) => {
+      state.settings.volume = parseInt(e.target.value);
+      if (els.volumeLabel) els.volumeLabel.textContent = `${state.settings.volume}%`;
+      if (state.audio) state.audio.volume = state.settings.volume / 100;
+    });
+  }
+
+  if (els.audioProgress) {
+    els.audioProgress.addEventListener("input", (e) => {
+      if (state.audio && state.audio.duration) {
+        const seekTime = (e.target.value / 100) * state.audio.duration;
+        state.audio.currentTime = seekTime;
+      }
+    });
+  }
+}
+
+// ============================================
+// مدیریت پس‌زمینه تصویری
+// ============================================
+function handleBgImage(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    removeBgMedia();
+    state.bgImage = event.target.result;
+    state.bgType = "image";
+    
+    if (els.bgImage) {
+      els.bgImage.src = event.target.result;
+      els.bgImage.classList.remove("hidden");
+    }
+    
+    if (els.bgPreviewImg) {
+      els.bgPreviewImg.src = event.target.result;
+      els.bgPreviewImg.classList.remove("hidden");
+    }
+    
+    if (els.bgPreview) els.bgPreview.classList.remove("hidden");
+    
+    const btnRemove = document.getElementById("btnRemoveBg");
+    if (btnRemove) btnRemove.classList.remove("hidden");
+    
+    updateBackgroundStyle();
+    showStatus("تصویر پس‌زمینه اضافه شد", "success");
+  };
+  reader.readAsDataURL(file);
+}
+
+// ============================================
+// مدیریت پس‌زمینه ویدیویی
+// ============================================
+function handleBgVideo(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    removeBgMedia();
+    state.bgVideo = event.target.result;
+    state.bgType = "video";
+    
+    if (els.bgVideo) {
+      els.bgVideo.src = event.target.result;
+      els.bgVideo.classList.remove("hidden");
+      els.bgVideo.play().catch(err => console.log("خطا در پخش ویدیو:", err));
+    }
+    
+    if (els.bgPreviewVideo) {
+      els.bgPreviewVideo.src = event.target.result;
+      els.bgPreviewVideo.classList.remove("hidden");
+    }
+    
+    if (els.bgPreview) els.bgPreview.classList.remove("hidden");
+    
+    const btnRemove = document.getElementById("btnRemoveBg");
+    if (btnRemove) btnRemove.classList.remove("hidden");
+    
+    updateBackgroundStyle();
+    showStatus("ویدیوی پس‌زمینه اضافه شد", "success");
+  };
+  reader.readAsDataURL(file);
+}
+
+// ============================================
+// حذف پس‌زمینه
+// ============================================
+function removeBgMedia() {
+  state.bgImage = null;
+  state.bgVideo = null;
+  state.bgType = null;
+  
+  if (els.bgImage) els.bgImage.classList.add("hidden");
+  if (els.bgVideo) {
+    els.bgVideo.classList.add("hidden");
+    els.bgVideo.pause();
+  }
+  if (els.bgPreviewImg) els.bgPreviewImg.classList.add("hidden");
+  if (els.bgPreviewVideo) els.bgPreviewVideo.classList.add("hidden");
+  if (els.bgPreview) els.bgPreview.classList.add("hidden");
+  
+  const btnRemove = document.getElementById("btnRemoveBg");
+  if (btnRemove) btnRemove.classList.add("hidden");
+  
+  const bgImageFile = document.getElementById("bgImageFile");
+  const bgVideoFile = document.getElementById("bgVideoFile");
+  if (bgImageFile) bgImageFile.value = "";
+  if (bgVideoFile) bgVideoFile.value = "";
+  
+  showStatus("پس‌زمینه حذف شد", "success");
+}
+
+// ============================================
+// به‌روزرسانی استایل پس‌زمینه
+// ============================================
+function updateBackgroundStyle() {
+  const opacity = state.settings.bgOpacity / 100;
+  const blur = state.settings.bgBlur;
+
+  if (state.bgType === "image" && els.bgImage) {
+    els.bgImage.style.opacity = opacity;
+    els.bgImage.style.filter = `blur(${blur}px)`;
+  } else if (state.bgType === "video" && els.bgVideo) {
+    els.bgVideo.style.opacity = opacity;
+    els.bgVideo.style.filter = `blur(${blur}px)`;
+  }
+}
+
+// ============================================
+// مدیریت فایل صوتی
+// ============================================
+function handleAudio(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    if (state.audio) {
+      state.audio.pause();
+      state.audio = null;
+    }
+
+    state.audio = new Audio(event.target.result);
+    state.audio.loop = true;
+    state.audio.volume = state.settings.volume / 100;
+    
+    if (els.audioPlayer) els.audioPlayer.classList.remove("hidden");
+
+    state.audio.addEventListener("loadedmetadata", () => {
+      if (els.audioTimeEnd) els.audioTimeEnd.textContent = formatTime(state.audio.duration);
+    });
+
+    state.audio.addEventListener("timeupdate", () => {
+      if (state.audio && state.audio.duration) {
+        const progress = (state.audio.currentTime / state.audio.duration) * 100;
+        if (els.audioProgress) els.audioProgress.value = progress;
+        if (els.audioCurrentTime) els.audioCurrentTime.textContent = formatTime(state.audio.currentTime);
+        if (els.audioTimeStart) els.audioTimeStart.textContent = formatTime(state.audio.currentTime);
+      }
+    });
+
+    showStatus("فایل صوتی اضافه شد", "success");
+  };
+  reader.readAsDataURL(file);
+}
+
+// ============================================
+// تغییر وضعیت پخش موسیقی
+// ============================================
+function toggleAudio() {
+  if (!state.audio) {
+    showStatus("لطفاً ابتدا یک فایل صوتی انتخاب کنید", "error");
+    return;
+  }
+
+  if (state.audio.paused) {
+    state.audio.play();
+    if (els.audioPlayIcon) els.audioPlayIcon.classList.add("hidden");
+    if (els.audioPauseIcon) els.audioPauseIcon.classList.remove("hidden");
+    if (els.audioToggleText) els.audioToggleText.textContent = "توقف";
+  } else {
+    state.audio.pause();
+    if (els.audioPlayIcon) els.audioPlayIcon.classList.remove("hidden");
+    if (els.audioPauseIcon) els.audioPauseIcon.classList.add("hidden");
+    if (els.audioToggleText) els.audioToggleText.textContent = "پخش";
+  }
+}
+
+// ============================================
+// فرمت زمان
+// ============================================
+function formatTime(seconds) {
+  if (isNaN(seconds) || !isFinite(seconds)) return "0:00";
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
+}
+
+// ============================================
+// راه‌اندازی قالب‌های آماده
+// ============================================
+function setupTemplates() {
+  document.querySelectorAll(".template-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const template = btn.dataset.template;
+      if (template) loadTemplate(template);
+    });
+  });
+}
+
+// ============================================
+// بارگذاری قالب
+// ============================================
+function loadTemplate(type) {
+  const templates = {
+    movie: `صحنه اول: شروع داستان
+تصویر: شهر در شب، نورهای رنگارنگ خیابان‌ها
+
+صحنه دوم: تنش و هیجان
+صدا: ضربان قلب تند و تندتر می‌شود
+
+صحنه سوم: اوج داستان
+تصویر: دویدن سریع در کوچه‌های تاریک شهر
+
+صحنه چهارم: پایان
+آرامش دوباره به شهر بازمی‌گردد`,
+
+    poem: `صحنه اول: آغاز
+دلم گرفته از این روزگار بی‌رحم
+
+صحنه دوم: تأمل و اندیشه
+چشمانت دریایی بی‌کران از رازها
+
+صحنه سوم: احساس عمیق
+و دلم می‌خواهد پرواز کند با تو
+
+صحنه چهارم: پایان
+و باران همچنان می‌بارد بر این شهر تنها`,
+
+    quote: `صحنه اول: حکمت اول
+زندگی کوتاه است، آن را هدر نده
+
+صحنه دوم: درس دوم
+پس لحظه‌ها را با عشق زندگی کن
+
+صحنه سوم: الهام نهایی
+و عشق بورز به همه چیز و همه کس`,
+
+    story: `صحنه اول: روزی روزگاری
+در شهری دور، دختری زندگی می‌کرد
+
+صحنه دوم: شروع ماجراجویی
+او تصمیم گرفت به دنبال رویاهایش برود
+
+صحنه سوم: مسیر سخت
+راه پر از چالش بود اما او تسلیم نشد
+
+صحنه چهارم: پایان خوش
+و سرانجام آرامش و شادی را یافت`,
+  };
+
+  if (els.inputText) {
+    els.inputText.value = templates[type] || templates.movie;
+    parseScenes();
+    updateStats();
+    showStatus("قالب بارگذاری شد", "success");
+  }
+}
+
+// ============================================
+// راه‌اندازی دکمه‌های هدر
+// ============================================
+function setupHeaderButtons() {
+  const btnHelp = document.getElementById("btnHelp");
+  const btnSettings = document.getElementById("btnSettings");
+  const btnExport = document.getElementById("btnExport");
+  const btnImport = document.getElementById("btnImport");
+  const btnShare = document.getElementById("btnShare");
+  const btnFullscreen = document.getElementById("btnFullscreen");
+  const importFile = document.getElementById("importFile");
+
+  if (btnHelp) btnHelp.addEventListener("click", showHelp);
+  if (btnSettings) btnSettings.addEventListener("click", showSettings);
+  if (btnExport) btnExport.addEventListener("click", exportProject);
+  if (btnImport) {
+    btnImport.addEventListener("click", () => {
+      if (importFile) importFile.click();
+    });
+  }
+  if (importFile) importFile.addEventListener("change", importProject);
+  if (btnShare) btnShare.addEventListener("click", shareProject);
+  if (btnFullscreen) btnFullscreen.addEventListener("click", toggleFullscreen);
+}
+
+// ============================================
+// راه‌اندازی کنترل‌های AI
+// ============================================
+function setupAIControls() {
+  const aiAssistant = document.getElementById("aiAssistant");
+  const btnAiGenerate = document.getElementById("btnAiGenerate");
+  const btnAiOptimize = document.getElementById("btnAiOptimize");
+  const closeAiModal = document.getElementById("closeAiModal");
+  const aiCancelBtn = document.getElementById("aiCancelBtn");
+  const aiGenerateBtn = document.getElementById("aiGenerateBtn");
+
+  if (aiAssistant) aiAssistant.addEventListener("click", openAiModal);
+  if (btnAiGenerate) btnAiGenerate.addEventListener("click", openAiModal);
+  if (btnAiOptimize) btnAiOptimize.addEventListener("click", optimizeWithAi);
+  if (closeAiModal) closeAiModal.addEventListener("click", closeAiModal_func);
+  if (aiCancelBtn) aiCancelBtn.addEventListener("click", closeAiModal_func);
+  if (aiGenerateBtn) aiGenerateBtn.addEventListener("click", generateWithAi);
+}
+
+// ============================================
+// راه‌اندازی تنظیمات پیشرفته
+// ============================================
+function setupAdvancedSettings() {
+  const closeSettingsModal = document.getElementById("closeSettingsModal");
+  const cancelSettings = document.getElementById("cancelSettings");
+  const saveSettings = document.getElementById("saveSettings");
+
+  if (closeSettingsModal) {
+    closeSettingsModal.addEventListener("click", closeSettingsModal_func);
+  }
+  
+  if (cancelSettings) {
+    cancelSettings.addEventListener("click", closeSettingsModal_func);
+  }
+
+  const videoQuality = document.getElementById("videoQuality");
+  const aspectRatio = document.getElementById("aspectRatio");
+  const brightnessRange = document.getElementById("brightnessRange");
+  const contrastRange = document.getElementById("contrastRange");
+  const saturationRange = document.getElementById("saturationRange");
+  const textPosition = document.getElementById("textPosition");
+  const textColor = document.getElementById("textColor");
+  const textShadow = document.getElementById("textShadow");
+
+  if (videoQuality) {
+    videoQuality.addEventListener("change", (e) => {
+      state.settings.videoQuality = e.target.value;
+    });
+  }
+
+  if (aspectRatio) {
+    aspectRatio.addEventListener("change", (e) => {
+      state.settings.aspectRatio = e.target.value;
+      applyAspectRatio();
+    });
+  }
+
+  if (brightnessRange) {
+    brightnessRange.addEventListener("input", (e) => {
+      state.settings.brightness = parseInt(e.target.value);
+      const brightnessValue = document.getElementById("brightnessValue");
+      if (brightnessValue) brightnessValue.textContent = state.settings.brightness;
+      applyColorFilters();
+    });
+  }
+
+  if (contrastRange) {
+    contrastRange.addEventListener("input", (e) => {
+      state.settings.contrast = parseInt(e.target.value);
+      const contrastValue = document.getElementById("contrastValue");
+      if (contrastValue) contrastValue.textContent = state.settings.contrast;
+      applyColorFilters();
+    });
+  }
+
+  if (saturationRange) {
+    saturationRange.addEventListener("input", (e) => {
+      state.settings.saturation = parseInt(e.target.value);
+      const saturationValue = document.getElementById("saturationValue");
+      if (saturationValue) saturationValue.textContent = state.settings.saturation;
+      applyColorFilters();
+    });
+  }
+
+  if (textPosition) {
+    textPosition.addEventListener("change", (e) => {
+      state.settings.textPosition = e.target.value;
+    });
+  }
+
+  if (textColor) {
+    textColor.addEventListener("input", (e) => {
+      state.settings.textColor = e.target.value;
+    });
+  }
+
+  if (textShadow) {
+    textShadow.addEventListener("change", (e) => {
+      state.settings.textShadow = e.target.checked;
+    });
+  }
+
+  if (saveSettings) {
+    saveSettings.addEventListener("click", () => {
+      try {
+        localStorage.setItem("advancedSettings", JSON.stringify(state.settings));
+        showStatus("تنظیمات ذخیره شد", "success");
+        closeSettingsModal_func();
+      } catch (err) {
+        console.error("خطا:", err);
+        showStatus("خطا در ذخیره", "error");
+      }
+    });
+  }
+
+  loadAdvancedSettings();
+}
+
+// ============================================
+// بارگذاری تنظیمات پیشرفته
+// ============================================
+function loadAdvancedSettings() {
+  try {
+    const saved = localStorage.getItem("advancedSettings");
+    if (saved) {
+      const settings = JSON.parse(saved);
+      Object.assign(state.settings, settings);
+
+      const videoQuality = document.getElementById("videoQuality");
+      const aspectRatio = document.getElementById("aspectRatio");
+      const brightnessRange = document.getElementById("brightnessRange");
+      const contrastRange = document.getElementById("contrastRange");
+      const saturationRange = document.getElementById("saturationRange");
+      const textPosition = document.getElementById("textPosition");
+      const textColor = document.getElementById("textColor");
+      const textShadow = document.getElementById("textShadow");
+
+      if (videoQuality) videoQuality.value = settings.videoQuality || "1080p";
+      if (aspectRatio) aspectRatio.value = settings.aspectRatio || "16:9";
+      if (brightnessRange) brightnessRange.value = settings.brightness || 100;
+      if (contrastRange) contrastRange.value = settings.contrast || 100;
+      if (saturationRange) saturationRange.value = settings.saturation || 100;
+      if (textPosition) textPosition.value = settings.textPosition || "center";
+      if (textColor) textColor.value = settings.textColor || "#ffffff";
+      if (textShadow) textShadow.checked = settings.textShadow !== false;
+
+      applyColorFilters();
+      applyAspectRatio();
+    }
+  } catch (err) {
+    console.error("خطا:", err);
+  }
+}
+
+// ============================================
+// اعمال فیلترهای رن

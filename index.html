@@ -5,10 +5,13 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>🎬 پخش‌کننده فیلم‌وار متن Pro</title>
 
+    <!-- فونت فارسی -->
     <link
       href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;900&display=swap"
       rel="stylesheet"
     />
+
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -20,17 +23,19 @@
         },
       };
     </script>
+
     <link rel="stylesheet" href="style.css" />
   </head>
 
   <body
     class="font-vazir min-h-screen overflow-x-hidden transition-all duration-500"
   >
-    <!-- دکمه تم -->
+    <!-- دکمه تغییر تم (تاریک/روشن) -->
     <button
       id="themeToggle"
       class="theme-toggle fixed top-4 left-4 lg:top-6 lg:left-6 z-50 w-12 h-12 lg:w-14 lg:h-14 rounded-full backdrop-blur-xl flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-2xl"
     >
+      <!-- آیکون خورشید -->
       <svg
         class="sun-icon w-6 h-6 lg:w-7 lg:h-7 text-amber-500 absolute transition-all duration-300"
         fill="none"
@@ -48,6 +53,7 @@
         <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
         <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
       </svg>
+      <!-- آیکون ماه -->
       <svg
         class="moon-icon w-6 h-6 lg:w-7 lg:h-7 text-blue-400 absolute transition-all duration-300"
         fill="none"
@@ -59,11 +65,11 @@
       </svg>
     </button>
 
-    <!-- دکمه AI -->
+    <!-- دکمه دستیار هوش مصنوعی -->
     <button
       id="aiAssistant"
       class="fixed bottom-6 left-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-2xl animate-float"
-      title="AI"
+      title="دستیار AI"
     >
       <svg
         class="w-7 h-7 text-white"
@@ -78,10 +84,11 @@
       </svg>
     </button>
 
+    <!-- محتوای اصلی -->
     <main
       class="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 max-w-[1920px]"
     >
-      <!-- هدر -->
+      <!-- بخش هدر -->
       <header class="mb-4 sm:mb-6 lg:mb-8">
         <div
           class="glass-card rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-8 backdrop-blur-2xl shadow-2xl"
@@ -89,9 +96,10 @@
           <div
             class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
           >
-            <div class="flex-1">
+            <!-- عنوان و توضیحات -->
+            <div class="flex-1 w-full sm:w-auto">
               <h1
-                class="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-black flex items-center gap-2 sm:gap-3 mb-2"
+                class="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-black flex flex-wrap items-center gap-2 sm:gap-3 mb-2"
               >
                 <span class="text-3xl sm:text-4xl animate-bounce-slow">🎬</span>
                 <span
@@ -109,7 +117,9 @@
               >
                 ابزار حرفه‌ای با AI، افکت‌های 3D و خروجی 4K
               </p>
-              <div class="flex flex-wrap gap-3 text-xs">
+
+              <!-- آمار آنلاین -->
+              <div class="flex flex-wrap gap-2 sm:gap-3 text-xs">
                 <div
                   class="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full"
                 >
@@ -117,23 +127,26 @@
                     class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"
                   ></span>
                   <span class="opacity-70"
-                    >آنلاین:
-                    <span id="visitors" class="font-bold">1,234</span></span
+                    >کاربران آنلاین:
+                    <span id="onlineUsers" class="font-bold">0</span></span
                   >
                 </div>
                 <div
                   class="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full"
                 >
-                  <span>⚡</span>
+                  <span>📊</span>
                   <span class="opacity-70"
-                    >پروژه‌ها:
-                    <span id="projectCount" class="font-bold">89</span></span
+                    >پروژه‌های امروز:
+                    <span id="todayProjects" class="font-bold">0</span></span
                   >
                 </div>
               </div>
             </div>
 
-            <div class="flex items-center gap-2">
+            <!-- دکمه‌های عملیاتی -->
+            <div
+              class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end"
+            >
               <button id="btnHelp" class="btn-icon" title="راهنما">
                 <svg
                   class="w-5 h-5"
@@ -147,7 +160,7 @@
                   />
                 </svg>
               </button>
-              <button id="btnSettings" class="btn-icon" title="تنظیمات">
+              <button id="btnSettings" class="btn-icon" title="تنظیمات پیشرفته">
                 <svg
                   class="w-5 h-5"
                   fill="none"
@@ -161,7 +174,7 @@
                   <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
               </button>
-              <button id="btnExport" class="btn-icon" title="خروجی">
+              <button id="btnExport" class="btn-icon" title="خروجی پروژه">
                 <svg
                   class="w-5 h-5"
                   fill="none"
@@ -174,7 +187,7 @@
                   />
                 </svg>
               </button>
-              <button id="btnImport" class="btn-icon" title="ورودی">
+              <button id="btnImport" class="btn-icon" title="ورودی پروژه">
                 <svg
                   class="w-5 h-5"
                   fill="none"
@@ -187,7 +200,7 @@
                   />
                 </svg>
               </button>
-              <button id="btnShare" class="btn-icon" title="اشتراک">
+              <button id="btnShare" class="btn-icon" title="اشتراک‌گذاری">
                 <svg
                   class="w-5 h-5"
                   fill="none"
@@ -218,12 +231,13 @@
         </div>
       </header>
 
+      <!-- گرید اصلی: کنترل‌ها و نمایشگر -->
       <div class="grid grid-cols-1 xl:grid-cols-12 gap-4 sm:gap-6">
-        <!-- کنترل‌ها -->
+        <!-- ستون کنترل‌ها (سمت راست در دسکتاپ) -->
         <div class="xl:col-span-4 space-y-4">
-          <!-- تب‌ها -->
+          <!-- تب‌های اصلی -->
           <div class="glass-card rounded-2xl p-2 backdrop-blur-2xl shadow-xl">
-            <div class="flex gap-2">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <button class="tab-btn active" data-tab="editor">
                 <svg
                   class="w-4 h-4"
@@ -277,7 +291,7 @@
             </div>
           </div>
 
-          <!-- ویرایشگر -->
+          <!-- تب ویرایشگر متن -->
           <div class="tab-content active" data-content="editor">
             <div
               class="glass-card rounded-2xl p-4 sm:p-5 backdrop-blur-2xl shadow-xl"
@@ -291,25 +305,28 @@
                 <span id="sceneCount" class="badge">0 صحنه</span>
               </div>
 
+              <!-- ناحیه ورود متن -->
               <div class="relative">
                 <textarea
                   id="inputText"
                   rows="10"
                   class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm resize-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
                   placeholder="صحنه اول: شب بارانی
-تصویر: چراغ‌ها در آب
+تصویر: چراغ‌ها در آب منعکس می‌شوند
 
 صحنه دوم: آرامش
-قدم‌های آرام"
+قدم‌های آرام در خیابان خلوت"
                 ></textarea>
+                <!-- شمارنده کلمات و حروف -->
                 <div
-                  class="absolute bottom-3 left-3 text-xs bg-black/20 px-2 py-1 rounded"
+                  class="absolute bottom-3 left-3 text-xs bg-black/20 px-2 py-1 rounded backdrop-blur-sm"
                 >
                   <span id="wordCount">0</span> کلمه •
                   <span id="charCount">0</span> حرف
                 </div>
               </div>
 
+              <!-- دکمه‌های کنترل پخش -->
               <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 mt-4">
                 <button
                   id="btnPlay"
@@ -319,6 +336,13 @@
                     <polygon points="5 3 19 12 5 21 5 3" />
                   </svg>
                   <span>پخش</span>
+                </button>
+                <button id="btnPause" class="btn btn-secondary hidden">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <rect x="6" y="4" width="4" height="16" />
+                    <rect x="14" y="4" width="4" height="16" />
+                  </svg>
+                  <span>توقف</span>
                 </button>
                 <button id="btnStop" class="btn btn-secondary">
                   <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -358,6 +382,7 @@
                 </button>
               </div>
 
+              <!-- قالب‌های آماده -->
               <div
                 class="mt-4 p-3 bg-gradient-to-r from-purple-500/10 to-cyan-500/10 rounded-lg border border-purple-500/20"
               >
@@ -380,18 +405,19 @@
             </div>
           </div>
 
-          <!-- افکت‌ها -->
+          <!-- تب افکت‌ها و جلوه‌های بصری -->
           <div class="tab-content" data-content="effects">
             <div
               class="glass-card rounded-2xl p-4 sm:p-5 backdrop-blur-2xl shadow-xl space-y-4"
             >
               <h3 class="font-bold flex items-center gap-2">
-                <span>⚡</span> افکت‌ها
+                <span>⚡</span> افکت‌ها و جلوه‌های بصری
               </h3>
 
+              <!-- کنترل سرعت پخش -->
               <div class="setting-group">
                 <label class="flex justify-between text-xs mb-2">
-                  <span>سرعت</span>
+                  <span>سرعت پخش</span>
                   <span id="speedLabel" class="font-bold text-primary-500"
                     >1.0×</span
                   >
@@ -407,38 +433,41 @@
                 />
               </div>
 
+              <!-- مدت زمان نمایش هر صحنه -->
               <div class="setting-group">
                 <label class="flex justify-between text-xs mb-2">
-                  <span>مدت صحنه</span>
+                  <span>مدت نمایش صحنه</span>
                   <span class="font-bold text-primary-500"
-                    ><span id="durationValue">3.0</span>s</span
+                    ><span id="durationValue">5.0</span>s</span
                   >
                 </label>
                 <input
                   id="durationInput"
                   type="range"
-                  min="0.5"
+                  min="1"
                   max="30"
                   step="0.5"
-                  value="3"
+                  value="5"
                   class="slider w-full"
                 />
               </div>
 
+              <!-- انتخاب نوع انتقال -->
               <div class="setting-group">
-                <label class="text-xs mb-2 block">انتقال</label>
+                <label class="text-xs mb-2 block">نوع انتقال بین صحنه‌ها</label>
                 <select id="transitionSelect" class="select-custom w-full">
-                  <option value="fade">محو</option>
-                  <option value="slide">اسلاید</option>
-                  <option value="zoom">زوم</option>
-                  <option value="blur">تار</option>
-                  <option value="rotate">چرخش</option>
+                  <option value="fade">محو شدن (Fade)</option>
+                  <option value="slide">اسلاید (Slide)</option>
+                  <option value="zoom">زوم (Zoom)</option>
+                  <option value="blur">تار شدن (Blur)</option>
+                  <option value="rotate">چرخش (Rotate)</option>
                 </select>
               </div>
 
+              <!-- اندازه فونت -->
               <div class="setting-group">
                 <label class="flex justify-between text-xs mb-2">
-                  <span>فونت</span>
+                  <span>اندازه فونت</span>
                   <span class="font-bold text-primary-500"
                     ><span id="fontSizeValue">48</span>px</span
                   >
@@ -454,6 +483,7 @@
                 />
               </div>
 
+              <!-- افکت‌های قابل فعال‌سازی -->
               <div class="border-t border-white/10 pt-4 space-y-2">
                 <label class="toggle-label">
                   <input
@@ -463,7 +493,7 @@
                     class="sr-only peer"
                   />
                   <div class="toggle-switch"></div>
-                  <span class="text-xs">تایپ‌نویس</span>
+                  <span class="text-xs">افکت تایپ‌نویس</span>
                 </label>
                 <label class="toggle-label">
                   <input
@@ -473,7 +503,7 @@
                     class="sr-only peer"
                   />
                   <div class="toggle-switch"></div>
-                  <span class="text-xs">Ken Burns</span>
+                  <span class="text-xs">افکت Ken Burns (زوم تصویر)</span>
                 </label>
                 <label class="toggle-label">
                   <input
@@ -482,7 +512,7 @@
                     class="sr-only peer"
                   />
                   <div class="toggle-switch"></div>
-                  <span class="text-xs">ذرات</span>
+                  <span class="text-xs">ذرات شناور</span>
                 </label>
                 <label class="toggle-label">
                   <input
@@ -492,7 +522,7 @@
                     class="sr-only peer"
                   />
                   <div class="toggle-switch"></div>
-                  <span class="text-xs">Vignette</span>
+                  <span class="text-xs">وینیت (تاریکی گوشه‌ها)</span>
                 </label>
                 <label class="toggle-label">
                   <input
@@ -502,7 +532,7 @@
                     class="sr-only peer"
                   />
                   <div class="toggle-switch"></div>
-                  <span class="text-xs">درخشش</span>
+                  <span class="text-xs">درخشش متن</span>
                 </label>
                 <label class="toggle-label">
                   <input
@@ -511,32 +541,111 @@
                     class="sr-only peer"
                   />
                   <div class="toggle-switch"></div>
-                  <span class="text-xs">Film Grain</span>
+                  <span class="text-xs">دانه‌بندی فیلم</span>
+                </label>
+                <label class="toggle-label">
+                  <input
+                    id="shakeEffect"
+                    type="checkbox"
+                    class="sr-only peer"
+                  />
+                  <div class="toggle-switch"></div>
+                  <span class="text-xs">لرزش دوربین</span>
+                </label>
+                <label class="toggle-label">
+                  <input
+                    id="glitchEffect"
+                    type="checkbox"
+                    class="sr-only peer"
+                  />
+                  <div class="toggle-switch"></div>
+                  <span class="text-xs">افکت Glitch (خرابی دیجیتال)</span>
+                </label>
+                <label class="toggle-label">
+                  <input
+                    id="chromaticEffect"
+                    type="checkbox"
+                    class="sr-only peer"
+                  />
+                  <div class="toggle-switch"></div>
+                  <span class="text-xs">انحراف رنگی (Chromatic)</span>
                 </label>
               </div>
             </div>
           </div>
 
-          <!-- مدیا -->
+          <!-- تب مدیا (عکس، ویدیو، موسیقی) -->
           <div class="tab-content" data-content="media">
+            <!-- بخش پس‌زمینه -->
             <div
               class="glass-card rounded-2xl p-4 sm:p-5 backdrop-blur-2xl shadow-xl mb-4"
             >
               <h3 class="font-bold flex items-center gap-2 mb-4">
-                <span>🖼️</span> پس‌زمینه
+                <span>🖼️</span> پس‌زمینه (عکس یا ویدیو)
               </h3>
+
+              <!-- دکمه‌های انتخاب نوع مدیا -->
+              <div class="flex gap-2 mb-4">
+                <button id="btnSelectImage" class="btn btn-primary flex-1">
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    viewBox="0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                  <span>عکس</span>
+                </button>
+                <button id="btnSelectVideo" class="btn btn-secondary flex-1">
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    viewBox="0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                    />
+                  </svg>
+                  <span>ویدیو</span>
+                </button>
+              </div>
+
+              <!-- ورودی فایل (مخفی) -->
               <input
                 id="bgImageFile"
                 type="file"
                 accept="image/*"
-                class="file-input w-full mb-4"
+                class="hidden"
               />
+              <input
+                id="bgVideoFile"
+                type="file"
+                accept="video/*"
+                class="hidden"
+              />
+
+              <!-- پیش‌نمایش -->
               <div
                 id="bgPreview"
                 class="hidden rounded-lg overflow-hidden border border-white/10 mb-4"
               >
-                <img id="bgPreviewImg" class="w-full h-32 object-cover" />
+                <img
+                  id="bgPreviewImg"
+                  class="w-full h-32 object-cover hidden"
+                />
+                <video
+                  id="bgPreviewVideo"
+                  class="w-full h-32 object-cover hidden"
+                  muted
+                  loop
+                ></video>
               </div>
+
+              <!-- تنظیمات پس‌زمینه -->
               <div class="space-y-4">
                 <div class="setting-group">
                   <label class="flex justify-between text-xs mb-2">
@@ -556,7 +665,7 @@
                 </div>
                 <div class="setting-group">
                   <label class="flex justify-between text-xs mb-2">
-                    <span>تاری</span>
+                    <span>میزان تاری</span>
                     <span class="font-bold text-primary-500"
                       ><span id="bgBlurValue">10</span>px</span
                     >
@@ -576,11 +685,12 @@
               </div>
             </div>
 
+            <!-- بخش موسیقی -->
             <div
               class="glass-card rounded-2xl p-4 sm:p-5 backdrop-blur-2xl shadow-xl"
             >
               <h3 class="font-bold flex items-center gap-2 mb-4">
-                <span>🎵</span> موسیقی
+                <span>🎵</span> موسیقی پس‌زمینه
               </h3>
               <input
                 id="audioFile"
@@ -588,12 +698,56 @@
                 accept="audio/*"
                 class="file-input w-full mb-4"
               />
-              <button id="audioToggle" class="btn btn-ghost w-full mb-4">
-                پخش موسیقی
-              </button>
-              <div class="setting-group">
+
+              <!-- پلیر موسیقی -->
+              <div id="audioPlayer" class="hidden space-y-3">
+                <div class="flex items-center gap-2">
+                  <button id="audioToggle" class="btn btn-ghost flex-1">
+                    <svg
+                      id="audioPlayIcon"
+                      class="w-4 h-4"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <polygon points="5 3 19 12 5 21 5 3" />
+                    </svg>
+                    <svg
+                      id="audioPauseIcon"
+                      class="w-4 h-4 hidden"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <rect x="6" y="4" width="4" height="16" />
+                      <rect x="14" y="4" width="4" height="16" />
+                    </svg>
+                    <span id="audioToggleText">پخش</span>
+                  </button>
+                  <span id="audioCurrentTime" class="text-xs opacity-70"
+                    >0:00</span
+                  >
+                </div>
+
+                <!-- نوار پیشرفت موسیقی -->
+                <div class="relative">
+                  <input
+                    id="audioProgress"
+                    type="range"
+                    min="0"
+                    max="100"
+                    value="0"
+                    class="slider w-full"
+                  />
+                </div>
+                <div class="flex justify-between text-xs opacity-70">
+                  <span id="audioTimeStart">0:00</span>
+                  <span id="audioTimeEnd">0:00</span>
+                </div>
+              </div>
+
+              <!-- کنترل صدا -->
+              <div class="setting-group mt-4">
                 <label class="flex justify-between text-xs mb-2">
-                  <span>حجم</span>
+                  <span>حجم صدا</span>
                   <span id="volumeLabel" class="font-bold text-primary-500"
                     >100%</span
                   >
@@ -610,57 +764,86 @@
             </div>
           </div>
 
-          <!-- AI -->
+          <!-- تب دستیار هوش مصنوعی -->
           <div class="tab-content" data-content="ai">
             <div
               class="glass-card rounded-2xl p-4 sm:p-5 backdrop-blur-2xl shadow-xl"
             >
               <h3 class="font-bold flex items-center gap-2 mb-4">
-                <span>🤖</span> دستیار AI
+                <span>🤖</span> دستیار هوش مصنوعی
               </h3>
               <div
                 class="p-4 bg-gradient-to-r from-purple-500/20 to-cyan-500/20 rounded-lg mb-4"
               >
                 <p class="text-sm mb-2">✨ AI می‌تواند:</p>
                 <ul class="text-xs space-y-1 opacity-80">
-                  <li>• تولید صحنه‌های سینمایی</li>
+                  <li>• تولید صحنه‌های سینمایی حرفه‌ای</li>
                   <li>• پیشنهاد افکت‌های مناسب</li>
-                  <li>• بهینه‌سازی متن</li>
+                  <li>• بهینه‌سازی و اصلاح متن</li>
+                  <li>• ایجاد محتوای خلاقانه</li>
                 </ul>
               </div>
               <button id="btnAiGenerate" class="btn btn-primary w-full mb-2">
-                تولید صحنه
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                <span>تولید صحنه جدید</span>
               </button>
               <button id="btnAiOptimize" class="btn btn-secondary w-full">
-                بهینه‌سازی
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>بهینه‌سازی متن</span>
               </button>
             </div>
           </div>
         </div>
 
-        <!-- Viewport -->
+        <!-- ستون نمایشگر (Viewport) -->
         <div class="xl:col-span-8">
           <div class="sticky top-4">
             <div
               class="viewport-container rounded-2xl overflow-hidden shadow-2xl border border-white/10"
             >
               <div id="viewport" class="viewport relative bg-black w-full">
+                <!-- لایه پس‌زمینه -->
                 <div id="bgContainer" class="absolute inset-0 z-0">
                   <img
                     id="bgImage"
                     class="w-full h-full object-cover opacity-50 hidden"
                   />
+                  <video
+                    id="bgVideo"
+                    class="w-full h-full object-cover opacity-50 hidden"
+                    muted
+                    loop
+                    autoplay
+                  ></video>
                 </div>
 
+                <!-- لایه ذرات شناور -->
                 <canvas
                   id="particlesCanvas"
                   class="absolute inset-0 w-full h-full pointer-events-none opacity-0 z-1"
                 ></canvas>
+
+                <!-- لایه Film Grain -->
                 <div
                   id="filmGrain"
                   class="absolute inset-0 pointer-events-none opacity-0 z-2"
                 ></div>
 
+                <!-- نوارهای سینمایی بالا و پایین -->
                 <div
                   class="letterbox-top absolute top-0 left-0 right-0 h-[8%] bg-black z-10"
                 ></div>
@@ -668,17 +851,22 @@
                   class="letterbox-bottom absolute bottom-0 left-0 right-0 h-[8%] bg-black z-10"
                 ></div>
 
+                <!-- صحنه اصلی -->
                 <div
                   id="sceneStage"
-                  class="absolute inset-0 flex items-center justify-center z-5 p-8"
+                  class="absolute inset-0 flex items-center justify-center z-5 p-4 sm:p-8"
                 ></div>
 
+                <!-- افکت Vignette -->
                 <div
                   id="vignette"
                   class="absolute inset-0 pointer-events-none opacity-0 z-8"
                 ></div>
 
-                <div class="absolute bottom-6 left-6 right-6 z-12">
+                <!-- کنترل‌ها و اطلاعات پخش -->
+                <div
+                  class="absolute bottom-6 left-4 right-4 sm:left-6 sm:right-6 z-12"
+                >
                   <div
                     class="flex justify-between text-xs text-white font-bold mb-2"
                   >
@@ -698,12 +886,13 @@
                   </div>
                 </div>
 
+                <!-- دکمه‌های کنترل داخل Viewport -->
                 <div
-                  class="viewport-controls absolute bottom-24 left-1/2 -translate-x-1/2 flex gap-4 z-15 opacity-0 hover:opacity-100 transition-opacity"
+                  class="viewport-controls absolute bottom-20 sm:bottom-24 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-4 z-15 opacity-0 hover:opacity-100 transition-opacity"
                 >
                   <button id="viewportPrev" class="control-btn">
                     <svg
-                      class="w-5 h-5"
+                      class="w-4 h-4 sm:w-5 sm:h-5"
                       fill="currentColor"
                       viewBox="0 0 24 24"
                     >
@@ -715,7 +904,7 @@
                     class="control-btn control-btn-large"
                   >
                     <svg
-                      class="w-8 h-8"
+                      class="w-6 h-6 sm:w-8 sm:h-8"
                       fill="currentColor"
                       viewBox="0 0 24 24"
                     >
@@ -724,7 +913,7 @@
                   </button>
                   <button id="viewportNext" class="control-btn">
                     <svg
-                      class="w-5 h-5"
+                      class="w-4 h-4 sm:w-5 sm:h-5"
                       fill="currentColor"
                       viewBox="0 0 24 24"
                     >
@@ -735,18 +924,19 @@
               </div>
             </div>
 
+            <!-- راهنمای میانبرها -->
             <div
-              class="glass-card rounded-xl p-4 mt-4 backdrop-blur-xl border border-white/10"
+              class="glass-card rounded-xl p-3 sm:p-4 mt-4 backdrop-blur-xl border border-white/10"
             >
-              <p class="text-xs font-semibold mb-3">⌨️ میانبرها</p>
+              <p class="text-xs font-semibold mb-3">⌨️ میانبرهای کیبورد</p>
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 <div class="flex items-center gap-2 text-xs">
                   <kbd class="kbd">Space</kbd>
-                  <span class="opacity-70">پخش</span>
+                  <span class="opacity-70">پخش/توقف</span>
                 </div>
                 <div class="flex items-center gap-2 text-xs">
                   <kbd class="kbd">←/→</kbd>
-                  <span class="opacity-70">صحنه</span>
+                  <span class="opacity-70">صحنه قبل/بعد</span>
                 </div>
                 <div class="flex items-center gap-2 text-xs">
                   <kbd class="kbd">F</kbd>
@@ -771,7 +961,7 @@
             class="flex flex-col sm:flex-row items-center justify-between gap-4"
           >
             <div class="flex items-center gap-3 text-xs">
-              <span class="font-bold text-primary-500">Pro v4.0</span>
+              <span class="font-bold text-primary-500">Pro v4.5</span>
               <span class="opacity-30">•</span>
               <span class="opacity-70">2024</span>
             </div>
@@ -789,9 +979,10 @@
       </footer>
     </main>
 
+    <!-- ورودی مخفی برای Import -->
     <input type="file" id="importFile" accept=".json" class="hidden" />
 
-    <!-- Modal AI -->
+    <!-- مودال دستیار AI -->
     <div
       id="aiModal"
       class="modal-overlay hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
@@ -801,7 +992,7 @@
       >
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-lg font-bold flex items-center gap-2">
-            <span>🤖</span> دستیار AI
+            <span>🤖</span> دستیار هوش مصنوعی
           </h3>
           <button
             id="closeAiModal"
@@ -819,23 +1010,188 @@
           </button>
         </div>
         <p class="text-sm opacity-70 mb-4">
-          از دستیار AI برای ایجاد محتوا استفاده کنید
+          درخواست خود را برای تولید محتوا وارد کنید
         </p>
         <textarea
           id="aiPrompt"
           rows="4"
           class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm resize-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
-          placeholder="مثال: یک صحنه سینمایی غروب کنار دریا بساز..."
+          placeholder="مثال: یک صحنه سینمایی از غروب آفتاب کنار دریا بساز..."
         ></textarea>
         <div class="flex gap-2 mt-4">
           <button id="aiGenerateBtn" class="btn btn-primary flex-1">
-            تولید
+            تولید محتوا
           </button>
           <button id="aiCancelBtn" class="btn btn-ghost">لغو</button>
         </div>
       </div>
     </div>
 
+    <!-- مودال تنظیمات پیشرفته -->
+    <div
+      id="settingsModal"
+      class="modal-overlay hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+    >
+      <div
+        class="modal-content glass-card rounded-2xl p-6 max-w-2xl w-full backdrop-blur-2xl border border-white/10 animate-slide-up max-h-[80vh] overflow-y-auto"
+      >
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-bold flex items-center gap-2">
+            <span>⚙️</span> تنظیمات پیشرفته
+          </h3>
+          <button
+            id="closeSettingsModal"
+            class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- تنظیمات کیفیت -->
+        <div class="space-y-4">
+          <div class="p-4 bg-white/5 rounded-lg">
+            <h4 class="font-bold mb-3 flex items-center gap-2">
+              <span>🎥</span> تنظیمات کیفیت خروجی
+            </h4>
+            <div class="space-y-3">
+              <div>
+                <label class="text-xs mb-2 block">کیفیت ویدیو</label>
+                <select id="videoQuality" class="select-custom w-full">
+                  <option value="1080p">Full HD (1080p)</option>
+                  <option value="1440p">2K (1440p)</option>
+                  <option value="2160p">4K (2160p)</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs mb-2 block">نسبت تصویر</label>
+                <select id="aspectRatio" class="select-custom w-full">
+                  <option value="16:9">16:9 (استاندارد)</option>
+                  <option value="21:9">21:9 (سینمایی)</option>
+                  <option value="4:3">4:3 (کلاسیک)</option>
+                  <option value="1:1">1:1 (مربع)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-4 bg-white/5 rounded-lg">
+            <h4 class="font-bold mb-3 flex items-center gap-2">
+              <span>🎨</span> تنظیمات رنگ و نور
+            </h4>
+            <div class="space-y-3">
+              <div class="setting-group">
+                <label class="flex justify-between text-xs mb-2">
+                  <span>روشنایی</span>
+                  <span class="font-bold text-primary-500"
+                    ><span id="brightnessValue">100</span>%</span
+                  >
+                </label>
+                <input
+                  id="brightnessRange"
+                  type="range"
+                  min="50"
+                  max="150"
+                  value="100"
+                  class="slider w-full"
+                />
+              </div>
+              <div class="setting-group">
+                <label class="flex justify-between text-xs mb-2">
+                  <span>کنتراست</span>
+                  <span class="font-bold text-primary-500"
+                    ><span id="contrastValue">100</span>%</span
+                  >
+                </label>
+                <input
+                  id="contrastRange"
+                  type="range"
+                  min="50"
+                  max="150"
+                  value="100"
+                  class="slider w-full"
+                />
+              </div>
+              <div class="setting-group">
+                <label class="flex justify-between text-xs mb-2">
+                  <span>اشباع رنگ</span>
+                  <span class="font-bold text-primary-500"
+                    ><span id="saturationValue">100</span>%</span
+                  >
+                </label>
+                <input
+                  id="saturationRange"
+                  type="range"
+                  min="0"
+                  max="200"
+                  value="100"
+                  class="slider w-full"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="p-4 bg-white/5 rounded-lg">
+            <h4 class="font-bold mb-3 flex items-center gap-2">
+              <span>📐</span> تنظیمات متن
+            </h4>
+            <div class="space-y-3">
+              <div>
+                <label class="text-xs mb-2 block">موقعیت متن</label>
+                <select id="textPosition" class="select-custom w-full">
+                  <option value="center">وسط</option>
+                  <option value="top">بالا</option>
+                  <option value="bottom">پایین</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs mb-2 block">رنگ متن</label>
+                <input
+                  id="textColor"
+                  type="color"
+                  value="#ffffff"
+                  class="w-full h-10 rounded-lg cursor-pointer"
+                />
+              </div>
+              <label class="toggle-label">
+                <input
+                  id="textShadow"
+                  type="checkbox"
+                  checked
+                  class="sr-only peer"
+                />
+                <div class="toggle-switch"></div>
+                <span class="text-xs">سایه متن</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="flex gap-2">
+            <button id="saveSettings" class="btn btn-primary flex-1">
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M5 13l4 4L19 7" />
+              </svg>
+              <span>ذخیره تنظیمات</span>
+            </button>
+            <button id="cancelSettings" class="btn btn-ghost">لغو</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- لود کردن اسکریپت -->
     <script src="script.js"></script>
   </body>
 </html>
